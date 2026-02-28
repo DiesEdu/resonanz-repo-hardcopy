@@ -1,13 +1,21 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import type { SheetMusic } from "@/types";
 import { mockSheetMusic } from "@/data/mockData";
+import LibraryAPIService from "@/services/libraryAPI";
 
 export const useMusicStore = defineStore("music", () => {
   const sheetMusic = ref<SheetMusic[]>(mockSheetMusic);
   const searchQuery = ref("");
   const selectedGenre = ref("All");
   const selectedDifficulty = ref("All");
+
+  onMounted(async () => {
+    // In a real app, you would fetch this data from an API
+    // For now, we use mock data defined in mockData.ts
+    const fetchScore = (await LibraryAPIService.getScores()) as { data: SheetMusic[] };
+    sheetMusic.value = fetchScore.data;
+  });
 
   const filteredSheetMusic = computed(() => {
     return sheetMusic.value.filter((item) => {
@@ -36,8 +44,10 @@ export const useMusicStore = defineStore("music", () => {
   };
 
   // Add new sheet music
-  const addSheetMusic = (newSheet: SheetMusic) => {
-    sheetMusic.value = [newSheet, ...sheetMusic.value];
+  const addSheetMusic = async (newSheet: SheetMusic) => {
+    const response = await LibraryAPIService.createScore(newSheet);
+    const insertNewScore = response.data as SheetMusic;
+    sheetMusic.value = [insertNewScore, ...sheetMusic.value];
   };
 
   // Get unique genres for filter

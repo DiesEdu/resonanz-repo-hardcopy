@@ -20,7 +20,11 @@
         leave-from-class="opacity-100 scale-100 translate-y-0"
         leave-to-class="opacity-0 scale-95 translate-y-4"
       >
-        <div v-if="show" class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white" @click.stop>
+        <div
+          v-if="show"
+          class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white"
+          @click.stop
+        >
           <!-- Header -->
           <div class="rounded-t-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
             <div class="flex items-center justify-between">
@@ -133,7 +137,7 @@
                     @click="toggleInstrument(instrument)"
                     class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
                     :class="
-                      formData.instrumentation.includes(instrument)
+                      formData.instruments.includes(instrument)
                         ? 'scale-105 bg-indigo-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     "
@@ -225,7 +229,7 @@ const formData = reactive({
   pages: 1,
   description: "",
   coverImage: "",
-  instrumentation: [] as string[],
+  instruments: [] as string[],
 });
 
 // Options
@@ -258,11 +262,11 @@ const isSubmitting = ref(false);
 
 // Toggle instrument selection
 const toggleInstrument = (instrument: string) => {
-  const index = formData.instrumentation.indexOf(instrument);
+  const index = formData.instruments.indexOf(instrument);
   if (index === -1) {
-    formData.instrumentation.push(instrument);
+    formData.instruments.push(instrument);
   } else {
-    formData.instrumentation.splice(index, 1);
+    formData.instruments.splice(index, 1);
   }
 };
 
@@ -297,7 +301,7 @@ const handleSubmit = async () => {
 
   // Create new sheet music object
   const newSheetMusic: SheetMusic = {
-    id: Date.now(), // Simple ID generation
+    id: Date.now(),
     title: formData.title,
     composer: formData.composer,
     genre: formData.genre,
@@ -309,7 +313,7 @@ const handleSubmit = async () => {
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/placeholder.pdf",
     uploadDate: new Date().toISOString().split("T")[0] || new Date().toISOString().split("T")[0]!,
-    instrumentation: formData.instrumentation.length ? formData.instrumentation : ["Piano"],
+    instruments: formData.instruments.length ? formData.instruments : ["Piano"],
   };
 
   // Emit the new sheet music
@@ -330,7 +334,7 @@ const resetForm = () => {
   formData.pages = 1;
   formData.description = "";
   formData.coverImage = "";
-  formData.instrumentation = [];
+  formData.instruments = [];
   errors.value = {};
 };
 

@@ -14,7 +14,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/moonlight-sonata.pdf",
     uploadDate: "2024-01-15",
-    instrumentation: ["Piano"],
+    instruments: ["Piano"],
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/clair-de-lune.pdf",
     uploadDate: "2024-01-10",
-    instrumentation: ["Piano"],
+    instruments: ["Piano"],
   },
   {
     id: 3,
@@ -44,7 +44,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/air-on-g-string.pdf",
     uploadDate: "2024-01-05",
-    instrumentation: ["Violin", "String Ensemble"],
+    instruments: ["Violin", "String Ensemble"],
   },
   {
     id: 4,
@@ -58,7 +58,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/gymnopedie-no1.pdf",
     uploadDate: "2024-01-20",
-    instrumentation: ["Piano"],
+    instruments: ["Piano"],
   },
   {
     id: 5,
@@ -72,7 +72,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/four-seasons-spring.pdf",
     uploadDate: "2024-01-18",
-    instrumentation: ["Violin", "Orchestra"],
+    instruments: ["Violin", "Orchestra"],
   },
   {
     id: 6,
@@ -87,7 +87,7 @@ export const mockSheetMusic: SheetMusic[] = [
       "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/chopin-nocturne.pdf",
     uploadDate: "2024-01-12",
-    instrumentation: ["Piano"],
+    instruments: ["Piano"],
   },
 ];
 
@@ -104,4 +104,4 @@ export const genres: Genre[] = [
   { id: 6, name: "Modern", count: mockSheetMusic.filter((s) => s.genre === "Modern").length },
 ];
 
-export const difficulties = ["All", "Beginner", "Intermediate", "Advanced"];
+export const difficulties = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];

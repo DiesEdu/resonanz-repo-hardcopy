@@ -274,9 +274,6 @@ const refreshLibrary = async () => {
 
 const handleAddSheetMusic = (newSheet: SheetMusic) => {
   musicStore.addSheetMusic(newSheet);
-
-  // Show success message (you could add a toast notification here)
-  console.log("Added new sheet music:", newSheet);
 };
 
 const scrollToTop = () => {
