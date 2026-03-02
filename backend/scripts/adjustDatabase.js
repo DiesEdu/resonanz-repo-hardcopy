@@ -20,22 +20,32 @@ const adjustDatabase = async () => {
       `✅ Database '${process.env.DB_NAME || "resonanz_music_library"}' verified`,
     );
 
-    // Adjust library table to change location_file to LONGTEXT
-    await connection.query(`
-      ALTER TABLE \`library\`
-      MODIFY COLUMN \`location_file\` LONGTEXT NOT NULL;
-      `);
-    console.log(
-      "✅ Library table updated! (location_file column changed to LONGTEXT)",
-    );
+    // // Adjust library table to change location_file to LONGTEXT
+    // await connection.query(`
+    //   ALTER TABLE \`library\`
+    //   MODIFY COLUMN \`location_file\` LONGTEXT NOT NULL;
+    //   `);
+    // console.log(
+    //   "✅ Library table updated! (location_file column changed to LONGTEXT)",
+    // );
 
-    // Adjust library table to change description to LONGTEXT
+    // // Adjust library table to change description to LONGTEXT
+    // await connection.query(`
+    //   ALTER TABLE \`library\`
+    //   MODIFY COLUMN description LONGTEXT NOT NULL;
+    //   `);
+    // console.log(
+    //   "✅ Library table updated! (description column changed to LONGTEXT)",
+    // );
+
+    // Remove unused columns from library table
     await connection.query(`
       ALTER TABLE \`library\`
-      MODIFY COLUMN description LONGTEXT NOT NULL;
+      DROP COLUMN \`fileUrl\`,
+      DROP COLUMN \`uploadDate\`;
       `);
     console.log(
-      "✅ Library table updated! (description column changed to LONGTEXT)",
+      "✅ Library table updated! (fileUrl and uploadDate columns removed)",
     );
 
     await connection.end();
