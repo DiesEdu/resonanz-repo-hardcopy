@@ -159,6 +159,20 @@
               ></textarea>
             </div>
 
+            <!-- Location File Library -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">
+                Location in File Library
+              </label>
+              <input
+                v-model="formData.location_file"
+                type="text"
+                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                placeholder="E-Indonesia"
+              />
+              <p class="text-xs text-gray-500">Optional: Specify where the file is stored</p>
+            </div>
+
             <!-- Cover Image URL -->
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"> Cover Image URL </label>
@@ -228,6 +242,7 @@ const formData = reactive({
   difficulty: "",
   pages: 1,
   description: "",
+  location_file: "",
   coverImage: "",
   instruments: [] as string[],
 });
@@ -245,6 +260,7 @@ const genreOptions = [
 const difficultyOptions = ["Beginner", "Intermediate", "Advanced"];
 const instrumentOptions = [
   "Piano",
+  "Choir",
   "Violin",
   "Cello",
   "Flute",
@@ -308,6 +324,7 @@ const handleSubmit = async () => {
     difficulty: formData.difficulty as "Beginner" | "Intermediate" | "Advanced",
     pages: formData.pages,
     description: formData.description || "No description provided.",
+    location_file: formData.location_file || "No location file provided.",
     coverImage:
       formData.coverImage ||
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",

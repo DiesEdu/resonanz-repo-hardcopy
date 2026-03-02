@@ -68,7 +68,7 @@
             </div>
 
             <!-- Animated download button -->
-            <button
+            <!-- <button
               class="group/btn relative mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2 text-white transition-all duration-300 hover:bg-indigo-700"
               @click.stop="handleDownload"
             >
@@ -78,17 +78,17 @@
                   :class="{ 'translate-y-1': isDownloading }"
                 />
                 <span>{{ downloadText }}</span>
-              </span>
+              </span> -->
 
-              <!-- Ripple effect -->
-              <span v-if="isDownloading" class="absolute inset-0 bg-indigo-700"></span>
+            <!-- Ripple effect -->
+            <!-- <span v-if="isDownloading" class="absolute inset-0 bg-indigo-700"></span>
               <span
                 v-for="i in 3"
                 :key="i"
                 class="animate-ripple absolute inset-0 rounded-lg bg-white/20"
                 :style="{ animationDelay: `${i * 0.3}s` }"
               ></span>
-            </button>
+            </button> -->
           </div>
         </div>
       </template>
@@ -168,13 +168,13 @@
                 </div>
               </div>
 
-              <button
+              <!-- <button
                 class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-3 text-lg text-white transition-colors hover:bg-indigo-700"
                 @click="handleDownload"
               >
                 <DocumentArrowDownIcon class="h-5 w-5" />
                 Download Sheet Music
-              </button>
+              </button> -->
             </div>
           </div>
         </Transition>

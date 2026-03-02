@@ -6,6 +6,7 @@ export interface SheetMusic {
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   pages: number;
   description: string;
+  location_file: string;
   coverImage: string;
   fileUrl: string;
   uploadDate: string;
