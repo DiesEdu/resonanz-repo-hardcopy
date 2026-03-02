@@ -155,7 +155,7 @@
                 <div class="grid grid-cols-2 gap-4">
                   <div class="flex items-center gap-2 text-gray-600">
                     <DocumentTextIcon class="h-5 w-5" />
-                    <span>{{ music.pages }} pages</span>
+                    <span>{{ music.pages === 0 ? "~ pages" : `${music.pages} pages` }}</span>
                   </div>
                   <div class="flex items-center gap-2 text-gray-600">
                     <MusicalNoteIcon class="h-5 w-5" />

@@ -20,12 +20,23 @@ const adjustDatabase = async () => {
       `✅ Database '${process.env.DB_NAME || "resonanz_music_library"}' verified`,
     );
 
-    // Adjust library table to add location column
+    // Adjust library table to change location_file to LONGTEXT
     await connection.query(`
       ALTER TABLE \`library\`
-      ADD COLUMN \`location\` VARCHAR(255) NOT NULL AFTER instruments,
-    `);
-    console.log("✅ Library table updated! (add location column)");
+      MODIFY COLUMN \`location_file\` LONGTEXT NOT NULL;
+      `);
+    console.log(
+      "✅ Library table updated! (location_file column changed to LONGTEXT)",
+    );
+
+    // Adjust library table to change description to LONGTEXT
+    await connection.query(`
+      ALTER TABLE \`library\`
+      MODIFY COLUMN description LONGTEXT NOT NULL;
+      `);
+    console.log(
+      "✅ Library table updated! (description column changed to LONGTEXT)",
+    );
 
     await connection.end();
     console.log("🎉 Database adjustment complete!");

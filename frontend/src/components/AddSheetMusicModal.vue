@@ -122,8 +122,13 @@
                   type="number"
                   required
                   min="1"
+                  :disabled="ifOrchestraCollections"
                   class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                  :class="{ 'border-red-500': errors.pages }"
+                  :class="
+                    ifOrchestraCollections
+                      ? 'bg-gray-100'
+                      : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500'
+                  "
                 />
               </div>
 
@@ -147,6 +152,82 @@
                 </div>
               </div>
             </div>
+
+            <div v-if="ifOrchestraCollections" class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"> Orchestra Collections </label>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="section in orchestraCollectionSections"
+                  :key="section"
+                  type="button"
+                  @click="openOrchestraPopup(section)"
+                  class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
+                  :class="
+                    selectedOrchestraSection === section
+                      ? 'scale-105 bg-indigo-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  "
+                >
+                  {{ section }}
+                </button>
+              </div>
+              <p class="text-xs text-gray-500">Choose a section to select one or more instruments.</p>
+              <div v-if="formData.orchestraCollections.length" class="flex flex-wrap gap-2 pt-1">
+                <span
+                  v-for="selected in formData.orchestraCollections"
+                  :key="selected"
+                  class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
+                >
+                  {{ selected }}
+                </span>
+              </div>
+            </div>
+
+            <Transition
+              enter-active-class="transition duration-200 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
+              <div
+                v-if="showOrchestraPopup"
+                class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+                @click.stop="closeOrchestraPopup"
+              >
+                <div class="w-full max-w-lg rounded-xl bg-white p-5 shadow-xl" @click.stop>
+                  <div class="mb-4 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-800">
+                      {{ selectedOrchestraSection }} Instruments
+                    </h3>
+                    <button
+                      type="button"
+                      class="text-sm font-medium text-gray-500 hover:text-gray-700"
+                      @click="closeOrchestraPopup"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      v-for="instrument in selectedOrchestraValues"
+                      :key="instrument"
+                      type="button"
+                      class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
+                      :class="
+                        formData.orchestraCollections.includes(instrument)
+                          ? 'scale-105 bg-indigo-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      "
+                      @click="toggleOrchestraCollectionValue(instrument)"
+                    >
+                      {{ instrument }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Transition>
 
             <!-- Description -->
             <div class="space-y-2">
@@ -224,7 +305,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { MusicalNoteIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
 import type { SheetMusic } from "@/types";
 
@@ -245,6 +326,7 @@ const formData = reactive({
   location_file: "",
   coverImage: "",
   instruments: [] as string[],
+  orchestraCollections: [] as string[],
 });
 
 // Options
@@ -270,21 +352,102 @@ const instrumentOptions = [
   "Voice",
   "Orchestra",
   "String Ensemble",
+  "Orchestra Collections",
 ];
+const ifOrchestraCollections = ref(false);
+const orchestraCollectionSections = [
+  "Woodwinds",
+  "Brass",
+  "Percussion",
+  "Strings",
+  "Keyboard",
+  "Timpani",
+  "Drum Set",
+] as const;
+const woodwinds = [
+  "Piccolo",
+  "Flute",
+  "Oboe",
+  "English Horn",
+  "Clarinet",
+  "Bass Clarinet",
+  "Bassoon",
+  "Contrabassoon",
+];
+const brass = ["Trumpet", "French Horn", "Trombone", "Bass Trombone", "Tuba"];
+const percussion = [
+  "Snare Drum",
+  "Bass Drum",
+  "Timpani",
+  "Cymbals",
+  "Triangle",
+  "Xylophone",
+  "Marimba",
+  "Glockenspiel",
+  "Vibraphone",
+];
+const strings = ["Violin", "Viola", "Cello", "Double Bass"];
+const keyboard = ["Piano", "Harpsichord", "Organ", "Celesta"];
+const timpani = ["Timpani"];
+const drumSet = ["Drum Set"];
+
+const orchestraCollectionMap = {
+  Woodwinds: woodwinds,
+  Brass: brass,
+  Percussion: percussion,
+  Strings: strings,
+  Keyboard: keyboard,
+  Timpani: timpani,
+  "Drum Set": drumSet,
+} as const;
+
+type OrchestraSection = (typeof orchestraCollectionSections)[number];
 
 // Validation errors
 const errors = ref<Record<string, string>>({});
 
 // Submission state
 const isSubmitting = ref(false);
+const showOrchestraPopup = ref(false);
+const selectedOrchestraSection = ref<OrchestraSection>("Woodwinds");
+const selectedOrchestraValues = computed(
+  () => orchestraCollectionMap[selectedOrchestraSection.value] ?? [],
+);
 
 // Toggle instrument selection
 const toggleInstrument = (instrument: string) => {
   const index = formData.instruments.indexOf(instrument);
+  if (instrument === "Orchestra Collections") {
+    ifOrchestraCollections.value = !ifOrchestraCollections.value;
+    if (!ifOrchestraCollections.value) {
+      formData.orchestraCollections = [];
+      showOrchestraPopup.value = false;
+    } else {
+      openOrchestraPopup(selectedOrchestraSection.value);
+    }
+  }
   if (index === -1) {
     formData.instruments.push(instrument);
   } else {
     formData.instruments.splice(index, 1);
+  }
+};
+
+const openOrchestraPopup = (section: OrchestraSection) => {
+  selectedOrchestraSection.value = section;
+  showOrchestraPopup.value = true;
+};
+
+const closeOrchestraPopup = () => {
+  showOrchestraPopup.value = false;
+};
+
+const toggleOrchestraCollectionValue = (value: string) => {
+  const index = formData.orchestraCollections.indexOf(value);
+  if (index === -1) {
+    formData.orchestraCollections.push(value);
+  } else {
+    formData.orchestraCollections.splice(index, 1);
   }
 };
 
@@ -324,7 +487,7 @@ const handleSubmit = async () => {
     composer: formData.composer,
     genre: formData.genre,
     difficulty: formData.difficulty as "Beginner" | "Intermediate" | "Advanced",
-    pages: formData.pages,
+    pages: ifOrchestraCollections.value ? 0 : formData.pages,
     description: formData.description || "No description provided.",
     location_file: formData.location_file || "No location file provided.",
     coverImage:
@@ -332,7 +495,11 @@ const handleSubmit = async () => {
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",
     fileUrl: "/sheets/placeholder.pdf",
     uploadDate: new Date().toISOString().split("T")[0] || new Date().toISOString().split("T")[0]!,
-    instruments: formData.instruments.length ? formData.instruments : ["Piano"],
+    instruments: formData.orchestraCollections.length
+      ? formData.orchestraCollections
+      : formData.instruments.length
+        ? formData.instruments
+        : ["Piano"],
   };
 
   // Emit the new sheet music
@@ -352,8 +519,13 @@ const resetForm = () => {
   formData.difficulty = "";
   formData.pages = 1;
   formData.description = "";
+  formData.location_file = "";
   formData.coverImage = "";
   formData.instruments = [];
+  formData.orchestraCollections = [];
+  ifOrchestraCollections.value = false;
+  showOrchestraPopup.value = false;
+  selectedOrchestraSection.value = "Woodwinds";
   errors.value = {};
 };
 
