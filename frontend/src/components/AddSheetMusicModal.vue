@@ -256,6 +256,8 @@ const genreOptions = [
   "Modern",
   "Jazz",
   "Contemporary",
+  "Christmas",
+  "Pop",
 ];
 const difficultyOptions = ["Beginner", "Intermediate", "Advanced"];
 const instrumentOptions = [
