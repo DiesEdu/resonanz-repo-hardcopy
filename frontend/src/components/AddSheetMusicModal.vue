@@ -32,7 +32,9 @@
                 <div class="rounded-lg bg-white/20 p-2">
                   <MusicalNoteIcon class="h-6 w-6 text-white" />
                 </div>
-                <h2 class="text-xl font-bold text-white">Add New Sheet Music</h2>
+                <h2 class="text-xl font-bold text-white">
+                  {{ isEditMode ? "Edit Sheet Music" : "Add New Sheet Music" }}
+                </h2>
               </div>
               <button class="text-white/80 transition-colors hover:text-white" @click="closeModal">
                 <XMarkIcon class="h-6 w-6" />
@@ -171,7 +173,9 @@
                   {{ section }}
                 </button>
               </div>
-              <p class="text-xs text-gray-500">Choose a section to select one or more instruments.</p>
+              <p class="text-xs text-gray-500">
+                Choose a section to select one or more instruments.
+              </p>
               <div v-if="formData.orchestraCollections.length" class="flex flex-wrap gap-2 pt-1">
                 <span
                   v-for="selected in formData.orchestraCollections"
@@ -294,7 +298,15 @@
                 :disabled="isSubmitting"
               >
                 <ArrowPathIcon v-if="isSubmitting" class="h-4 w-4 animate-spin" />
-                <span>{{ isSubmitting ? "Adding..." : "Add Sheet Music" }}</span>
+                <span>{{
+                  isSubmitting
+                    ? isEditMode
+                      ? "Updating..."
+                      : "Adding..."
+                    : isEditMode
+                      ? "Update Sheet Music"
+                      : "Add Sheet Music"
+                }}</span>
               </button>
             </div>
           </form>
@@ -305,15 +317,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { MusicalNoteIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
 import type { SheetMusic } from "@/types";
 
-defineProps<{
+const props = defineProps<{
   show: boolean;
+  editSheet?: SheetMusic | null;
 }>();
 
 const emit = defineEmits(["close", "add"]);
+const isEditMode = computed(() => !!props.editSheet);
 
 // Form data
 const formData = reactive({
@@ -480,9 +494,9 @@ const handleSubmit = async () => {
   // Simulate API call
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  // Create new sheet music object
+  // Create add/edit payload
   const newSheetMusic: SheetMusic = {
-    id: Date.now(),
+    id: props.editSheet?.id ?? Date.now(),
     title: formData.title,
     composer: formData.composer,
     genre: formData.genre,
@@ -493,8 +507,6 @@ const handleSubmit = async () => {
     coverImage:
       formData.coverImage ||
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=300&h=400",
-    fileUrl: "/sheets/placeholder.pdf",
-    uploadDate: new Date().toISOString().split("T")[0] || new Date().toISOString().split("T")[0]!,
     instruments: formData.orchestraCollections.length
       ? formData.orchestraCollections
       : formData.instruments.length
@@ -534,4 +546,44 @@ const closeModal = () => {
   resetForm();
   emit("close");
 };
+
+const populateForm = (sheet: SheetMusic) => {
+  formData.title = sheet.title || "";
+  formData.composer = sheet.composer || "";
+  formData.genre = sheet.genre || "";
+  formData.difficulty = sheet.difficulty || "";
+  formData.pages = sheet.pages > 0 ? sheet.pages : 1;
+  formData.description = sheet.description || "";
+  formData.location_file = sheet.location_file || "";
+  formData.coverImage = sheet.coverImage || "";
+  formData.instruments =
+    sheet.pages === 0 ? ["Orchestra Collections"] : [...(sheet.instruments || [])];
+  formData.orchestraCollections = sheet.pages === 0 ? [...(sheet.instruments || [])] : [];
+  ifOrchestraCollections.value = sheet.pages === 0;
+  showOrchestraPopup.value = false;
+  selectedOrchestraSection.value = "Woodwinds";
+  errors.value = {};
+};
+
+watch(
+  () => props.show,
+  (isOpen) => {
+    if (!isOpen) return;
+    if (props.editSheet) {
+      populateForm(props.editSheet);
+    } else {
+      resetForm();
+    }
+  },
+);
+
+watch(
+  () => props.editSheet,
+  (sheet) => {
+    if (!props.show) return;
+    if (sheet) {
+      populateForm(sheet);
+    }
+  },
+);
 </script>

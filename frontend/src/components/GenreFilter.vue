@@ -73,5 +73,4 @@ const genres = computed<Genre[]>(() => [
     count: musicStore.sheetMusic.filter((s) => s.genre === "Pop").length,
   },
 ]);
-console.log("Genres with counts:", genres);
 </script>

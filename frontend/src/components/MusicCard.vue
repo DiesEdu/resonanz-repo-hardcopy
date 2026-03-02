@@ -168,6 +168,14 @@
                 </div>
               </div>
 
+              <button
+                class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 text-lg text-white transition-colors hover:bg-amber-600"
+                @click="handleEdit"
+              >
+                <PencilSquareIcon class="h-5 w-5" />
+                Edit Sheet Music
+              </button>
+
               <!-- <button
                 class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-3 text-lg text-white transition-colors hover:bg-indigo-700"
                 @click="handleDownload"
@@ -191,6 +199,7 @@ import {
   MusicalNoteIcon,
   CalendarIcon,
   XMarkIcon,
+  PencilSquareIcon,
 } from "@heroicons/vue/24/outline";
 import type { SheetMusic } from "@/types";
 import { useMusicStore } from "@/stores/musicStore";
@@ -198,6 +207,9 @@ import AnimatedCard from "./AnimatedCard.vue";
 
 const props = defineProps<{
   music: SheetMusic;
+}>();
+const emit = defineEmits<{
+  (e: "edit", music: SheetMusic): void;
 }>();
 
 const musicStore = useMusicStore();
@@ -229,6 +241,11 @@ const handleDownload = (e: Event) => {
       downloadText.value = "Download Sheet Music";
     }, 2000);
   }, 1500);
+};
+
+const handleEdit = () => {
+  showDetails.value = false;
+  emit("edit", props.music);
 };
 </script>
 

@@ -51,7 +51,7 @@
                 enter-from-class="opacity-0 scale-0"
                 enter-to-class="opacity-100 scale-100"
               >
-                <button class="group relative" @click="showAddModal = true">
+                <button class="group relative" @click="openAddModal">
                   <div
                     class="absolute inset-0 rounded-full bg-indigo-400 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
                   ></div>
@@ -172,6 +172,7 @@
               :key="music.id"
               :music="music"
               :style="{ animationDelay: `${index * 100}ms` }"
+              @edit="handleEditRequest"
             />
           </TransitionGroup>
 
@@ -227,8 +228,9 @@
     <!-- Add Sheet Music Modal -->
     <AddSheetMusicModal
       :show="showAddModal"
-      @close="showAddModal = false"
-      @add="handleAddSheetMusic"
+      :edit-sheet="editingSheet"
+      @close="handleCloseModal"
+      @add="handleSaveSheetMusic"
     />
   </div>
 </template>
@@ -254,6 +256,7 @@ const isLoading = ref(false);
 const isRefreshing = ref(false);
 const showScrollTop = ref(false);
 const showAddModal = ref(false);
+const editingSheet = ref<SheetMusic | null>(null);
 
 const resetFilters = () => {
   musicStore.searchQuery = "";
@@ -272,8 +275,30 @@ const refreshLibrary = async () => {
   isLoading.value = false;
 };
 
-const handleAddSheetMusic = (newSheet: SheetMusic) => {
-  musicStore.addSheetMusic(newSheet);
+const handleSaveSheetMusic = (sheet: SheetMusic) => {
+  if (editingSheet.value) {
+    console.log("Updating sheet music:", sheet);
+    musicStore.updateSheetMusic(sheet);
+  } else {
+    console.log("Adding new sheet music:", sheet);
+    musicStore.addSheetMusic(sheet);
+  }
+  editingSheet.value = null;
+};
+
+const handleEditRequest = (music: SheetMusic) => {
+  editingSheet.value = { ...music, instruments: [...music.instruments] };
+  showAddModal.value = true;
+};
+
+const handleCloseModal = () => {
+  showAddModal.value = false;
+  editingSheet.value = null;
+};
+
+const openAddModal = () => {
+  editingSheet.value = null;
+  showAddModal.value = true;
 };
 
 const scrollToTop = () => {

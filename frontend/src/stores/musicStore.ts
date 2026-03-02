@@ -50,6 +50,14 @@ export const useMusicStore = defineStore("music", () => {
     sheetMusic.value = [insertNewScore, ...sheetMusic.value];
   };
 
+  // Update existing sheet music
+  const updateSheetMusic = async (updatedSheet: SheetMusic) => {
+    await LibraryAPIService.updateScore(updatedSheet.id, updatedSheet);
+    sheetMusic.value = sheetMusic.value.map((item) =>
+      item.id === updatedSheet.id ? { ...item, ...updatedSheet } : item,
+    );
+  };
+
   // Get unique genres for filter
   const availableGenres = computed(() => {
     const genres = ["All", ...new Set(sheetMusic.value.map((item) => item.genre))];
@@ -64,6 +72,7 @@ export const useMusicStore = defineStore("music", () => {
     filteredSheetMusic,
     getDifficultyColor,
     addSheetMusic,
+    updateSheetMusic,
     availableGenres,
   };
 });

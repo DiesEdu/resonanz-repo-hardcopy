@@ -58,6 +58,16 @@ class LibraryAPIService {
       body: JSON.stringify(scoreData),
     });
   }
+
+  static async updateScore(
+    scoreId: number,
+    scoreData: Partial<SheetMusic>,
+  ): Promise<ApiResponse<null>> {
+    return this.request<ApiResponse<null>>(`/library/${scoreId}`, {
+      method: "PUT",
+      body: JSON.stringify(scoreData),
+    });
+  }
 }
 
 export default LibraryAPIService;

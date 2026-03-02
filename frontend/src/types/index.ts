@@ -8,8 +8,6 @@ export interface SheetMusic {
   description: string;
   location_file: string;
   coverImage: string;
-  fileUrl: string;
-  uploadDate: string;
   instruments: string[];
 }
 
