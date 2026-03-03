@@ -177,13 +177,15 @@
                 Choose a section to select one or more instruments.
               </p>
               <div v-if="formData.orchestraCollections.length" class="flex flex-wrap gap-2 pt-1">
-                <span
-                  v-for="selected in formData.orchestraCollections"
-                  :key="selected"
-                  class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
+                <button
+                  v-for="(selected, index) in formData.orchestraCollections"
+                  :key="`${selected}-${index}`"
+                  type="button"
+                  class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-200"
+                  @click="removeOrchestraCollectionValue(index)"
                 >
                   {{ selected }}
-                </span>
+                </button>
               </div>
             </div>
 
@@ -215,12 +217,12 @@
                   </div>
                   <div class="flex flex-wrap gap-2">
                     <button
-                      v-for="instrument in selectedOrchestraValues"
-                      :key="instrument"
+                      v-for="(instrument, index) in selectedOrchestraValues"
+                      :key="`${instrument}-${index}`"
                       type="button"
                       class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
                       :class="
-                        formData.orchestraCollections.includes(instrument)
+                        hasOrchestraCollectionInstrument(instrument)
                           ? 'scale-105 bg-indigo-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       "
@@ -389,13 +391,11 @@ const woodwinds = [
   "Clarinet",
   "Bass Clarinet",
   "Bassoon",
-  "Contrabassoon",
 ];
-const brass = ["Trumpet", "French Horn", "Trombone", "Bass Trombone", "Tuba"];
+const brass = ["Trumpet", "French Horn", "Trombone", "Tuba"];
 const percussion = [
   "Snare Drum",
   "Bass Drum",
-  "Timpani",
   "Cymbals",
   "Triangle",
   "Xylophone",
@@ -403,7 +403,7 @@ const percussion = [
   "Glockenspiel",
   "Vibraphone",
 ];
-const strings = ["Violin", "Viola", "Cello", "Double Bass"];
+const strings = ["Violin", "Violin", "Viola", "Cello", "Contrabass"];
 const keyboard = ["Piano", "Harpsichord", "Organ", "Celesta"];
 const timpani = ["Timpani"];
 const drumSet = ["Drum Set"];
@@ -475,13 +475,56 @@ const closeOrchestraPopup = () => {
   showOrchestraPopup.value = false;
 };
 
-const toggleOrchestraCollectionValue = (value: string) => {
-  const index = formData.orchestraCollections.indexOf(value);
-  if (index === -1) {
-    formData.orchestraCollections.push(value);
-  } else {
-    formData.orchestraCollections.splice(index, 1);
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const getOrchestraCollectionBase = (value: string) => value.replace(/\s\d+$/, "").trim();
+
+const getOrchestraCollectionNumber = (value: string, base: string) => {
+  const match = value.match(new RegExp(`^${escapeRegExp(base)}(?:\\s(\\d+))?$`));
+  if (!match) return 0;
+  return match[1] ? Number.parseInt(match[1], 10) : 1;
+};
+
+const hasOrchestraCollectionInstrument = (base: string) =>
+  formData.orchestraCollections.some((value) => getOrchestraCollectionNumber(value, base) > 0);
+
+const normalizeOrchestraCollectionInstrument = (base: string) => {
+  const matchingIndexes = formData.orchestraCollections.reduce<number[]>(
+    (indexes, selected, idx) => {
+      if (getOrchestraCollectionNumber(selected, base) > 0) {
+        indexes.push(idx);
+      }
+      return indexes;
+    },
+    [],
+  );
+
+  if (matchingIndexes.length === 1) {
+    const index = matchingIndexes[0];
+    if (index !== undefined) {
+      formData.orchestraCollections[index] = base;
+    }
+    return;
   }
+
+  if (matchingIndexes.length > 1) {
+    matchingIndexes.forEach((idx, order) => {
+      formData.orchestraCollections[idx] = `${base} ${order + 1}`;
+    });
+  }
+};
+
+const toggleOrchestraCollectionValue = (value: string) => {
+  formData.orchestraCollections.push(value);
+  normalizeOrchestraCollectionInstrument(value);
+};
+
+const removeOrchestraCollectionValue = (index: number) => {
+  const removedValue = formData.orchestraCollections[index];
+  if (!removedValue) return;
+  const base = getOrchestraCollectionBase(removedValue);
+  formData.orchestraCollections.splice(index, 1);
+  normalizeOrchestraCollectionInstrument(base);
 };
 
 // Handle image error
@@ -580,12 +623,19 @@ const populateForm = (sheet: SheetMusic) => {
   formData.coverImage = sheet.coverImage || "";
   formData.instruments =
     sheet.pages === 0 ? ["Orchestra Collections"] : [...(sheet.instruments || [])];
-  formData.orchestraCollections = sheet.pages === 0 ? [...(sheet.instruments || [])] : [];
+  formData.orchestraCollections =
+    sheet.score_type === "Orchestra Collections" || sheet.score_type === "Full Score"
+      ? [...(sheet.instruments || [])]
+      : [];
   ifOrchestraCollections.value = sheet.score_type === "Orchestra Collections";
   ifFullScore.value = sheet.score_type === "Full Score";
+  scoreType.value = sheet.score_type || "Single";
   showOrchestraPopup.value = false;
   selectedOrchestraSection.value = "Woodwinds";
   errors.value = {};
+  if (ifFullScore.value) {
+    formData.instruments = ["Full Score"];
+  }
 };
 
 watch(

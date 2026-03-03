@@ -48,12 +48,21 @@ const adjustDatabase = async () => {
     //   "✅ Library table updated! (fileUrl and uploadDate columns removed)",
     // );
 
-    // add column score_type to library table
+    // // add column score_type to library table
+    // await connection.query(`
+    //   ALTER TABLE \`library\`
+    //   ADD COLUMN score_type ENUM('Full Score', 'Orchestra Collections', 'Single') NOT NULL DEFAULT 'Full Score';
+    //   `);
+    // console.log("✅ Library table updated! (score_type column added)");
+
+    // adjust column genre, add christmas and pop
     await connection.query(`
       ALTER TABLE \`library\`
-      ADD COLUMN score_type ENUM('Full Score', 'Orchestra Collections', 'Single') NOT NULL DEFAULT 'Full Score';
-      `);
-    console.log("✅ Library table updated! (score_type column added)");
+      MODIFY COLUMN genre ENUM('Classical', 'Baroque', 'Romantic', 'Impressionist', 'Modern', 'Jazz', 'Contemporary', 'Christmas', 'Pop') NOT NULL;
+    `);
+    console.log(
+      "✅ Library table updated! (genre column adjusted to include Christmas and Pop)",
+    );
 
     await connection.end();
     console.log("🎉 Database adjustment complete!");

@@ -95,99 +95,101 @@
     </AnimatedCard>
 
     <!-- Details Modal -->
-    <Transition
-      enter-active-class="transition duration-300 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition duration-200 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="showDetails"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-        @click="showDetails = false"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
       >
-        <Transition
-          enter-active-class="transition duration-300 ease-out transform"
-          enter-from-class="opacity-0 scale-95 translate-y-4"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition duration-200 ease-in transform"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-95 translate-y-4"
+        <div
+          v-if="showDetails"
+          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          @click="showDetails = false"
         >
-          <div
-            v-if="showDetails"
-            class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white"
-            @click.stop
+          <Transition
+            enter-active-class="transition duration-300 ease-out transform"
+            enter-from-class="opacity-0 scale-95 translate-y-4"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            leave-active-class="transition duration-200 ease-in transform"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-95 translate-y-4"
           >
-            <div class="relative">
-              <img
-                :src="music.coverImage"
-                :alt="music.title"
-                class="h-64 w-full rounded-t-xl object-cover"
-              />
-              <button
-                class="absolute top-4 right-4 rounded-full bg-white/90 p-2 backdrop-blur-sm transition-colors hover:bg-white"
-                @click="showDetails = false"
-              >
-                <XMarkIcon class="h-5 w-5" />
-              </button>
-            </div>
-
-            <div class="p-6">
-              <h2 class="mb-2 text-2xl font-bold">{{ music.title }}</h2>
-              <p class="mb-4 text-lg text-gray-600">{{ music.composer }}</p>
-
-              <div class="mb-6 flex gap-2">
-                <span class="rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-800">{{
-                  music.genre
-                }}</span>
-                <span class="rounded-full px-3 py-1 text-sm" :class="difficultyColor">{{
-                  music.difficulty
-                }}</span>
+            <div
+              v-if="showDetails"
+              class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white"
+              @click.stop
+            >
+              <div class="relative">
+                <img
+                  :src="music.coverImage"
+                  :alt="music.title"
+                  class="h-64 w-full rounded-t-xl object-cover"
+                />
+                <button
+                  class="absolute top-4 right-4 rounded-full bg-white/90 p-2 backdrop-blur-sm transition-colors hover:bg-white"
+                  @click="showDetails = false"
+                >
+                  <XMarkIcon class="h-5 w-5" />
+                </button>
               </div>
 
-              <p class="mb-6 text-gray-700">{{ music.description }}</p>
+              <div class="p-6">
+                <h2 class="mb-2 text-2xl font-bold">{{ music.title }}</h2>
+                <p class="mb-4 text-lg text-gray-600">{{ music.composer }}</p>
 
-              <div class="border-t pt-6">
-                <h3 class="mb-3 font-semibold">Details</h3>
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <DocumentTextIcon class="h-5 w-5" />
-                    <span>{{ music.pages === 0 ? "~ pages" : `${music.pages} pages` }}</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <MusicalNoteIcon class="h-5 w-5" />
-                    <span>{{ music.instruments.join(", ") }}</span>
-                  </div>
-                  <!-- <div class="flex items-center gap-2 text-gray-600">
-                    <CalendarIcon class="h-5 w-5" />
-                    <span>Added {{ formatDate(music.uploadDate) }}</span>
-                  </div> -->
+                <div class="mb-6 flex gap-2">
+                  <span class="rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-800">{{
+                    music.genre
+                  }}</span>
+                  <span class="rounded-full px-3 py-1 text-sm" :class="difficultyColor">{{
+                    music.difficulty
+                  }}</span>
                 </div>
+
+                <p class="mb-6 text-gray-700">{{ music.description }}</p>
+
+                <div class="border-t pt-6">
+                  <h3 class="mb-3 font-semibold">Details</h3>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-2 text-gray-600">
+                      <DocumentTextIcon class="h-5 w-5" />
+                      <span>{{ music.pages === 0 ? "~ pages" : `${music.pages} pages` }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                      <MusicalNoteIcon class="h-5 w-5" />
+                      <span>{{ music.instruments.join(", ") }}</span>
+                    </div>
+                    <!-- <div class="flex items-center gap-2 text-gray-600">
+                      <CalendarIcon class="h-5 w-5" />
+                      <span>Added {{ formatDate(music.uploadDate) }}</span>
+                    </div> -->
+                  </div>
+                </div>
+
+                <button
+                  class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 text-lg text-white transition-colors hover:bg-amber-600"
+                  @click="handleEdit"
+                >
+                  <PencilSquareIcon class="h-5 w-5" />
+                  Edit Sheet Music
+                </button>
+
+                <!-- <button
+                  class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-3 text-lg text-white transition-colors hover:bg-indigo-700"
+                  @click="handleDownload"
+                >
+                  <DocumentArrowDownIcon class="h-5 w-5" />
+                  Download Sheet Music
+                </button> -->
               </div>
-
-              <button
-                class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 text-lg text-white transition-colors hover:bg-amber-600"
-                @click="handleEdit"
-              >
-                <PencilSquareIcon class="h-5 w-5" />
-                Edit Sheet Music
-              </button>
-
-              <!-- <button
-                class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-3 text-lg text-white transition-colors hover:bg-indigo-700"
-                @click="handleDownload"
-              >
-                <DocumentArrowDownIcon class="h-5 w-5" />
-                Download Sheet Music
-              </button> -->
             </div>
-          </div>
-        </Transition>
-      </div>
-    </Transition>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
