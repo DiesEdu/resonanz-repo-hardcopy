@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between text-sm text-amber-600">
               <span class="flex items-center gap-1">
                 <DocumentTextIcon class="h-4 w-4" />
-                {{ music.instruments.join(", ") }}
+                {{ scoreDisplay }}
               </span>
             </div>
 
@@ -219,6 +219,16 @@ const isDownloading = ref(false);
 const downloadText = ref("Download Sheet Music");
 
 const difficultyColor = computed(() => musicStore.getDifficultyColor(props.music.difficulty));
+
+const scoreDisplay = computed(() => {
+  if (
+    props.music.score_type === "Full Score" ||
+    props.music.score_type === "Orchestra Collections"
+  ) {
+    return props.music.score_type;
+  }
+  return props.music.instruments.join(", ");
+});
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString("en-US", {
