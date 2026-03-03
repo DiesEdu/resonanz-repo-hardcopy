@@ -38,15 +38,22 @@ const adjustDatabase = async () => {
     //   "✅ Library table updated! (description column changed to LONGTEXT)",
     // );
 
-    // Remove unused columns from library table
+    // // Remove unused columns from library table
+    // await connection.query(`
+    //   ALTER TABLE \`library\`
+    //   DROP COLUMN \`fileUrl\`,
+    //   DROP COLUMN \`uploadDate\`;
+    //   `);
+    // console.log(
+    //   "✅ Library table updated! (fileUrl and uploadDate columns removed)",
+    // );
+
+    // add column score_type to library table
     await connection.query(`
       ALTER TABLE \`library\`
-      DROP COLUMN \`fileUrl\`,
-      DROP COLUMN \`uploadDate\`;
+      ADD COLUMN score_type ENUM('Full Score', 'Orchestra Collections', 'Single') NOT NULL DEFAULT 'Full Score';
       `);
-    console.log(
-      "✅ Library table updated! (fileUrl and uploadDate columns removed)",
-    );
+    console.log("✅ Library table updated! (score_type column added)");
 
     await connection.end();
     console.log("🎉 Database adjustment complete!");

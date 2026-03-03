@@ -124,10 +124,10 @@
                   type="number"
                   required
                   min="1"
-                  :disabled="ifOrchestraCollections"
+                  :disabled="ifOrchestraCollections && !ifFullScore"
                   class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                   :class="
-                    ifOrchestraCollections
+                    ifOrchestraCollections && !ifFullScore
                       ? 'bg-gray-100'
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500'
                   "
@@ -155,7 +155,7 @@
               </div>
             </div>
 
-            <div v-if="ifOrchestraCollections" class="space-y-2">
+            <div v-if="ifOrchestraCollections || ifFullScore" class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"> Orchestra Collections </label>
               <div class="flex flex-wrap gap-2">
                 <button
@@ -328,6 +328,7 @@ const props = defineProps<{
 
 const emit = defineEmits(["close", "add"]);
 const isEditMode = computed(() => !!props.editSheet);
+const scoreType = ref("Single");
 
 // Form data
 const formData = reactive({
@@ -367,8 +368,10 @@ const instrumentOptions = [
   "Orchestra",
   "String Ensemble",
   "Orchestra Collections",
+  "Full Score",
 ];
 const ifOrchestraCollections = ref(false);
+const ifFullScore = ref(false);
 const orchestraCollectionSections = [
   "Woodwinds",
   "Brass",
@@ -431,11 +434,27 @@ const selectedOrchestraValues = computed(
 // Toggle instrument selection
 const toggleInstrument = (instrument: string) => {
   const index = formData.instruments.indexOf(instrument);
-  if (instrument === "Orchestra Collections") {
-    ifOrchestraCollections.value = !ifOrchestraCollections.value;
-    if (!ifOrchestraCollections.value) {
+  if (instrument === "Orchestra Collections" || instrument === "Full Score") {
+    //Orchestra Collections
+    if (instrument === "Orchestra Collections") {
+      scoreType.value = "Orchestra Collections";
+      ifOrchestraCollections.value = true;
+      ifFullScore.value = false;
+      if (formData.instruments.indexOf("Full Score") !== -1) {
+        formData.instruments.splice(formData.instruments.indexOf("Full Score"), 1);
+      }
+    } else if (instrument === "Full Score") {
+      scoreType.value = "Full Score";
+      ifFullScore.value = true;
+      ifOrchestraCollections.value = false;
+      if (formData.instruments.indexOf("Orchestra Collections") !== -1) {
+        formData.instruments.splice(formData.instruments.indexOf("Orchestra Collections"), 1);
+      }
+    }
+    if (!ifOrchestraCollections.value && !ifFullScore.value) {
       formData.orchestraCollections = [];
       showOrchestraPopup.value = false;
+      scoreType.value = "Single";
     } else {
       openOrchestraPopup(selectedOrchestraSection.value);
     }
@@ -501,7 +520,7 @@ const handleSubmit = async () => {
     composer: formData.composer,
     genre: formData.genre,
     difficulty: formData.difficulty as "Beginner" | "Intermediate" | "Advanced",
-    pages: ifOrchestraCollections.value ? 0 : formData.pages,
+    pages: ifOrchestraCollections.value && !ifFullScore.value ? 0 : formData.pages,
     description: formData.description || "No description provided.",
     location_file: formData.location_file || "No location file provided.",
     coverImage:
@@ -512,6 +531,7 @@ const handleSubmit = async () => {
       : formData.instruments.length
         ? formData.instruments
         : ["Piano"],
+    score_type: scoreType.value,
   };
 
   // Emit the new sheet music
@@ -535,6 +555,8 @@ const resetForm = () => {
   formData.coverImage = "";
   formData.instruments = [];
   formData.orchestraCollections = [];
+  scoreType.value = "Single";
+  ifFullScore.value = false;
   ifOrchestraCollections.value = false;
   showOrchestraPopup.value = false;
   selectedOrchestraSection.value = "Woodwinds";
@@ -559,7 +581,8 @@ const populateForm = (sheet: SheetMusic) => {
   formData.instruments =
     sheet.pages === 0 ? ["Orchestra Collections"] : [...(sheet.instruments || [])];
   formData.orchestraCollections = sheet.pages === 0 ? [...(sheet.instruments || [])] : [];
-  ifOrchestraCollections.value = sheet.pages === 0;
+  ifOrchestraCollections.value = sheet.score_type === "Orchestra Collections";
+  ifFullScore.value = sheet.score_type === "Full Score";
   showOrchestraPopup.value = false;
   selectedOrchestraSection.value = "Woodwinds";
   errors.value = {};

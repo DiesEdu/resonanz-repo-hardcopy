@@ -161,10 +161,10 @@
                     <MusicalNoteIcon class="h-5 w-5" />
                     <span>{{ music.instruments.join(", ") }}</span>
                   </div>
-                  <div class="flex items-center gap-2 text-gray-600">
+                  <!-- <div class="flex items-center gap-2 text-gray-600">
                     <CalendarIcon class="h-5 w-5" />
                     <span>Added {{ formatDate(music.uploadDate) }}</span>
-                  </div>
+                  </div> -->
                 </div>
               </div>
 

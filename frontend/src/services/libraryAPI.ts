@@ -63,6 +63,7 @@ class LibraryAPIService {
     scoreId: number,
     scoreData: Partial<SheetMusic>,
   ): Promise<ApiResponse<null>> {
+    console.log("Score data", scoreData);
     return this.request<ApiResponse<null>>(`/library/${scoreId}`, {
       method: "PUT",
       body: JSON.stringify(scoreData),

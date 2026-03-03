@@ -9,6 +9,7 @@ export interface SheetMusic {
   location_file: string;
   coverImage: string;
   instruments: string[];
+  score_type: string;
 }
 
 export interface Genre {
