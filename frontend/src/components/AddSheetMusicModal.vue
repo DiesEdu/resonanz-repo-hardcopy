@@ -168,7 +168,9 @@
             </div>
 
             <div v-if="ifOrchestraCollections || ifFullScore" class="space-y-2">
-              <label class="block text-sm font-medium text-amber-800"> Orchestra Collections </label>
+              <label class="block text-sm font-medium text-amber-800">
+                Orchestra Collections
+              </label>
               <div class="flex flex-wrap gap-2">
                 <button
                   v-for="section in orchestraCollectionSections"
@@ -405,7 +407,7 @@ const woodwinds = [
   "Bass Clarinet",
   "Bassoon",
 ];
-const brass = ["Trumpet", "French Horn", "Trombone", "Tuba"];
+const brass = ["Trumpet", "Horn", "Trombone", "Tuba"];
 const percussion = [
   "Snare Drum",
   "Bass Drum",
@@ -416,7 +418,7 @@ const percussion = [
   "Glockenspiel",
   "Vibraphone",
 ];
-const strings = ["Violin", "Violin", "Viola", "Cello", "Contrabass"];
+const strings = ["Violin", "Viola", "Cello", "Contrabass"];
 const keyboard = ["Piano", "Harpsichord", "Organ", "Celesta"];
 const timpani = ["Timpani"];
 const drumSet = ["Drum Set"];
