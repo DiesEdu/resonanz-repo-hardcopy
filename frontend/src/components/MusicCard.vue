@@ -138,6 +138,7 @@
 
               <div class="p-6">
                 <h2 class="mb-2 text-2xl font-bold">{{ music.title }}</h2>
+                <h3 class="mb-2 text-xl font-semibold italic">{{ music.subtitle }}</h3>
                 <p class="mb-4 text-lg text-gray-600">{{ music.composer }}</p>
 
                 <div class="mb-6 flex gap-2">
@@ -196,10 +197,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  DocumentArrowDownIcon,
   DocumentTextIcon,
   MusicalNoteIcon,
-  CalendarIcon,
   XMarkIcon,
   PencilSquareIcon,
 } from "@heroicons/vue/24/outline";

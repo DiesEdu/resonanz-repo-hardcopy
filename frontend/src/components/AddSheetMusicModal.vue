@@ -60,6 +60,18 @@
               <p v-if="errors.title" class="text-sm text-red-600">{{ errors.title }}</p>
             </div>
 
+            <!-- Subtitle -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"> Subtitle </label>
+              <input
+                v-model="formData.subtitle"
+                type="text"
+                required
+                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g., movement 1: Adagio sostenuto"
+              />
+            </div>
+
             <!-- Composer -->
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700">
@@ -335,6 +347,7 @@ const scoreType = ref("Single");
 // Form data
 const formData = reactive({
   title: "",
+  subtitle: "",
   composer: "",
   genre: "",
   difficulty: "",
@@ -560,6 +573,7 @@ const handleSubmit = async () => {
   const newSheetMusic: SheetMusic = {
     id: props.editSheet?.id ?? Date.now(),
     title: formData.title,
+    subtitle: formData.subtitle,
     composer: formData.composer,
     genre: formData.genre,
     difficulty: formData.difficulty as "Beginner" | "Intermediate" | "Advanced",
@@ -589,6 +603,7 @@ const handleSubmit = async () => {
 // Reset form
 const resetForm = () => {
   formData.title = "";
+  formData.subtitle = "";
   formData.composer = "";
   formData.genre = "";
   formData.difficulty = "";
@@ -614,6 +629,7 @@ const closeModal = () => {
 
 const populateForm = (sheet: SheetMusic) => {
   formData.title = sheet.title || "";
+  formData.subtitle = sheet.subtitle || "";
   formData.composer = sheet.composer || "";
   formData.genre = sheet.genre || "";
   formData.difficulty = sheet.difficulty || "";

@@ -1,6 +1,7 @@
 export interface SheetMusic {
   id: number;
   title: string;
+  subtitle: string;
   composer: string;
   genre: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
