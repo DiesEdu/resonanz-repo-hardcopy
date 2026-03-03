@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-2">
-    <h3 class="mb-3 font-semibold text-gray-700">Difficulty</h3>
+    <h3 class="mb-3 font-semibold text-amber-800">Difficulty</h3>
     <button
       v-for="difficulty in difficulties"
       :key="difficulty"
       @click="selectedDifficulty = difficulty"
       class="w-full rounded-lg px-3 py-2 text-left transition-colors"
       :class="
-        selectedDifficulty === difficulty ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-gray-100'
+        selectedDifficulty === difficulty ? 'bg-yellow-100 text-amber-800' : 'hover:bg-yellow-100'
       "
     >
       {{ difficulty }}

@@ -26,7 +26,7 @@
           @click.stop
         >
           <!-- Header -->
-          <div class="rounded-t-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+          <div class="rounded-t-xl bg-gradient-to-r from-amber-700 to-yellow-500 p-6">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="rounded-lg bg-white/20 p-2">
@@ -46,59 +46,59 @@
           <form @submit.prevent="handleSubmit" class="space-y-6 p-6">
             <!-- Title -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">
-                Title <span class="text-red-500">*</span>
+              <label class="block text-sm font-medium text-amber-800">
+                Title <span class="text-amber-700">*</span>
               </label>
               <input
                 v-model="formData.title"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                :class="{ 'border-red-500': errors.title }"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
+                :class="{ 'border-amber-700': errors.title }"
                 placeholder="e.g., Moonlight Sonata"
               />
-              <p v-if="errors.title" class="text-sm text-red-600">{{ errors.title }}</p>
+              <p v-if="errors.title" class="text-sm text-amber-800">{{ errors.title }}</p>
             </div>
 
             <!-- Subtitle -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"> Subtitle </label>
+              <label class="block text-sm font-medium text-amber-800"> Subtitle </label>
               <input
                 v-model="formData.subtitle"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
                 placeholder="e.g., movement 1: Adagio sostenuto"
               />
             </div>
 
             <!-- Composer -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">
-                Composer <span class="text-red-500">*</span>
+              <label class="block text-sm font-medium text-amber-800">
+                Composer <span class="text-amber-700">*</span>
               </label>
               <input
                 v-model="formData.composer"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                :class="{ 'border-red-500': errors.composer }"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
+                :class="{ 'border-amber-700': errors.composer }"
                 placeholder="e.g., Ludwig van Beethoven"
               />
-              <p v-if="errors.composer" class="text-sm text-red-600">{{ errors.composer }}</p>
+              <p v-if="errors.composer" class="text-sm text-amber-800">{{ errors.composer }}</p>
             </div>
 
             <!-- Genre and Difficulty Row -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">
-                  Genre <span class="text-red-500">*</span>
+                <label class="block text-sm font-medium text-amber-800">
+                  Genre <span class="text-amber-700">*</span>
                 </label>
                 <select
                   v-model="formData.genre"
                   required
-                  class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                  :class="{ 'border-red-500': errors.genre }"
+                  class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
+                  :class="{ 'border-amber-700': errors.genre }"
                 >
                   <option value="">Select genre</option>
                   <option v-for="genre in genreOptions" :key="genre" :value="genre">
@@ -108,14 +108,14 @@
               </div>
 
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">
-                  Difficulty <span class="text-red-500">*</span>
+                <label class="block text-sm font-medium text-amber-800">
+                  Difficulty <span class="text-amber-700">*</span>
                 </label>
                 <select
                   v-model="formData.difficulty"
                   required
-                  class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                  :class="{ 'border-red-500': errors.difficulty }"
+                  class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
+                  :class="{ 'border-amber-700': errors.difficulty }"
                 >
                   <option value="">Select difficulty</option>
                   <option v-for="level in difficultyOptions" :key="level" :value="level">
@@ -128,8 +128,8 @@
             <!-- Pages and Instrumentation Row -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">
-                  Pages <span class="text-red-500">*</span>
+                <label class="block text-sm font-medium text-amber-800">
+                  Pages <span class="text-amber-700">*</span>
                 </label>
                 <input
                   v-model.number="formData.pages"
@@ -137,17 +137,17 @@
                   required
                   min="1"
                   :disabled="ifOrchestraCollections && !ifFullScore"
-                  class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
                   :class="
                     ifOrchestraCollections && !ifFullScore
-                      ? 'bg-gray-100'
-                      : 'border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500'
+                      ? 'bg-yellow-100'
+                      : 'border-yellow-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500'
                   "
                 />
               </div>
 
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700"> Instrumentation </label>
+                <label class="block text-sm font-medium text-amber-800"> Instrumentation </label>
                 <div class="flex flex-wrap gap-2">
                   <button
                     v-for="instrument in instrumentOptions"
@@ -157,8 +157,8 @@
                     class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
                     :class="
                       formData.instruments.includes(instrument)
-                        ? 'scale-105 bg-indigo-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'scale-105 bg-amber-700 text-white shadow-md'
+                        : 'bg-yellow-100 text-amber-800 hover:bg-yellow-200'
                     "
                   >
                     {{ instrument }}
@@ -168,7 +168,7 @@
             </div>
 
             <div v-if="ifOrchestraCollections || ifFullScore" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"> Orchestra Collections </label>
+              <label class="block text-sm font-medium text-amber-800"> Orchestra Collections </label>
               <div class="flex flex-wrap gap-2">
                 <button
                   v-for="section in orchestraCollectionSections"
@@ -178,14 +178,14 @@
                   class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
                   :class="
                     selectedOrchestraSection === section
-                      ? 'scale-105 bg-indigo-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'scale-105 bg-amber-700 text-white shadow-md'
+                      : 'bg-yellow-100 text-amber-800 hover:bg-yellow-200'
                   "
                 >
                   {{ section }}
                 </button>
               </div>
-              <p class="text-xs text-gray-500">
+              <p class="text-xs text-amber-600">
                 Choose a section to select one or more instruments.
               </p>
               <div v-if="formData.orchestraCollections.length" class="flex flex-wrap gap-2 pt-1">
@@ -193,7 +193,7 @@
                   v-for="(selected, index) in formData.orchestraCollections"
                   :key="`${selected}-${index}`"
                   type="button"
-                  class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-200"
+                  class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-amber-800 transition-colors hover:bg-yellow-200"
                   @click="removeOrchestraCollectionValue(index)"
                 >
                   {{ selected }}
@@ -216,12 +216,12 @@
               >
                 <div class="w-full max-w-lg rounded-xl bg-white p-5 shadow-xl" @click.stop>
                   <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-800">
+                    <h3 class="text-lg font-semibold text-amber-900">
                       {{ selectedOrchestraSection }} Instruments
                     </h3>
                     <button
                       type="button"
-                      class="text-sm font-medium text-gray-500 hover:text-gray-700"
+                      class="text-sm font-medium text-amber-600 hover:text-amber-800"
                       @click="closeOrchestraPopup"
                     >
                       Close
@@ -235,8 +235,8 @@
                       class="rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
                       :class="
                         hasOrchestraCollectionInstrument(instrument)
-                          ? 'scale-105 bg-indigo-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'scale-105 bg-amber-700 text-white shadow-md'
+                          : 'bg-yellow-100 text-amber-800 hover:bg-yellow-200'
                       "
                       @click="toggleOrchestraCollectionValue(instrument)"
                     >
@@ -249,45 +249,45 @@
 
             <!-- Description -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"> Description </label>
+              <label class="block text-sm font-medium text-amber-800"> Description </label>
               <textarea
                 v-model="formData.description"
                 rows="4"
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
                 placeholder="Enter a description of the piece..."
               ></textarea>
             </div>
 
             <!-- Location File Library -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">
+              <label class="block text-sm font-medium text-amber-800">
                 Location in File Library
               </label>
               <input
                 v-model="formData.location_file"
                 type="text"
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
                 placeholder="E-Indonesia"
               />
-              <p class="text-xs text-gray-500">Optional: Specify where the file is stored</p>
+              <p class="text-xs text-amber-600">Optional: Specify where the file is stored</p>
             </div>
 
             <!-- Cover Image URL -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"> Cover Image URL </label>
+              <label class="block text-sm font-medium text-amber-800"> Cover Image URL </label>
               <input
                 v-model="formData.coverImage"
                 type="url"
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
                 placeholder="https://example.com/image.jpg"
               />
-              <p class="text-xs text-gray-500">Leave empty to use default image</p>
+              <p class="text-xs text-amber-600">Leave empty to use default image</p>
             </div>
 
             <!-- Preview Section (if image URL is provided) -->
             <div v-if="formData.coverImage" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Preview</label>
-              <div class="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-gray-200">
+              <label class="block text-sm font-medium text-amber-800">Preview</label>
+              <div class="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-yellow-200">
                 <img
                   :src="formData.coverImage"
                   alt="Cover preview"
@@ -301,14 +301,14 @@
             <div class="flex justify-end gap-3 border-t pt-4">
               <button
                 type="button"
-                class="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-all duration-200 hover:scale-105 hover:bg-gray-200"
+                class="rounded-lg bg-yellow-100 px-4 py-2 text-amber-800 transition-all duration-200 hover:scale-105 hover:bg-yellow-200"
                 @click="closeModal"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-indigo-700"
+                class="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-amber-800"
                 :disabled="isSubmitting"
               >
                 <ArrowPathIcon v-if="isSubmitting" class="h-4 w-4 animate-spin" />

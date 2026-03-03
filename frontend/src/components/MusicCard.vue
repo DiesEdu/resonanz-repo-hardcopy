@@ -4,7 +4,7 @@
       :show="true"
       custom-class="group cursor-pointer"
       with-glow
-      glow-color="indigo"
+      glow-color="gold"
       @click="showDetails = true"
     >
       <template #default="{ isHovered }">
@@ -37,16 +37,16 @@
           <div class="p-4">
             <h3
               class="mb-1 text-lg font-semibold transition-colors duration-300"
-              :class="{ 'text-indigo-600': isHovered }"
+              :class="{ 'text-amber-700': isHovered }"
             >
               {{ music.title }}
             </h3>
-            <p class="mb-2 text-sm text-gray-600">{{ music.composer }}</p>
+            <p class="mb-2 text-sm text-amber-700">{{ music.composer }}</p>
 
             <div class="mb-3 flex flex-wrap gap-2">
               <span
-                class="transform rounded-full bg-indigo-100 px-2 py-1 text-xs text-indigo-800 transition-all duration-300"
-                :class="{ 'scale-105 bg-indigo-200': isHovered }"
+                class="transform rounded-full bg-yellow-100 px-2 py-1 text-xs text-amber-900 transition-all duration-300"
+                :class="{ 'scale-105 bg-yellow-200': isHovered }"
               >
                 {{ music.genre }}
               </span>
@@ -58,9 +58,9 @@
               </span>
             </div>
 
-            <p class="mb-3 line-clamp-2 text-sm text-gray-600">{{ music.description }}</p>
+            <p class="mb-3 line-clamp-2 text-sm text-amber-700">{{ music.description }}</p>
 
-            <div class="flex items-center justify-between text-sm text-gray-500">
+            <div class="flex items-center justify-between text-sm text-amber-600">
               <span class="flex items-center gap-1">
                 <DocumentTextIcon class="h-4 w-4" />
                 {{ music.instruments.join(", ") }}
@@ -69,7 +69,7 @@
 
             <!-- Animated download button -->
             <!-- <button
-              class="group/btn relative mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2 text-white transition-all duration-300 hover:bg-indigo-700"
+              class="group/btn relative mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-amber-700 py-2 text-white transition-all duration-300 hover:bg-amber-800"
               @click.stop="handleDownload"
             >
               <span class="relative z-10 flex items-center gap-2">
@@ -81,7 +81,7 @@
               </span> -->
 
             <!-- Ripple effect -->
-            <!-- <span v-if="isDownloading" class="absolute inset-0 bg-indigo-700"></span>
+            <!-- <span v-if="isDownloading" class="absolute inset-0 bg-amber-800"></span>
               <span
                 v-for="i in 3"
                 :key="i"
@@ -139,10 +139,10 @@
               <div class="p-6">
                 <h2 class="mb-2 text-2xl font-bold">{{ music.title }}</h2>
                 <h3 class="mb-2 text-xl font-semibold italic">{{ music.subtitle }}</h3>
-                <p class="mb-4 text-lg text-gray-600">{{ music.composer }}</p>
+                <p class="mb-4 text-lg text-amber-700">{{ music.composer }}</p>
 
                 <div class="mb-6 flex gap-2">
-                  <span class="rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-800">{{
+                  <span class="rounded-full bg-yellow-100 px-3 py-1 text-sm text-amber-900">{{
                     music.genre
                   }}</span>
                   <span class="rounded-full px-3 py-1 text-sm" :class="difficultyColor">{{
@@ -150,20 +150,20 @@
                   }}</span>
                 </div>
 
-                <p class="mb-6 text-gray-700">{{ music.description }}</p>
+                <p class="mb-6 text-amber-800">{{ music.description }}</p>
 
                 <div class="border-t pt-6">
                   <h3 class="mb-3 font-semibold">Details</h3>
                   <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center gap-2 text-gray-600">
+                    <div class="flex items-center gap-2 text-amber-700">
                       <DocumentTextIcon class="h-5 w-5" />
                       <span>{{ music.pages === 0 ? "~ pages" : `${music.pages} pages` }}</span>
                     </div>
-                    <div class="flex items-center gap-2 text-gray-600">
+                    <div class="flex items-center gap-2 text-amber-700">
                       <MusicalNoteIcon class="h-5 w-5" />
                       <span>{{ music.instruments.join(", ") }}</span>
                     </div>
-                    <!-- <div class="flex items-center gap-2 text-gray-600">
+                    <!-- <div class="flex items-center gap-2 text-amber-700">
                       <CalendarIcon class="h-5 w-5" />
                       <span>Added {{ formatDate(music.uploadDate) }}</span>
                     </div> -->
@@ -179,7 +179,7 @@
                 </button>
 
                 <!-- <button
-                  class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-3 text-lg text-white transition-colors hover:bg-indigo-700"
+                  class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-700 py-3 text-lg text-white transition-colors hover:bg-amber-800"
                   @click="handleDownload"
                 >
                   <DocumentArrowDownIcon class="h-5 w-5" />

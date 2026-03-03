@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50/30">
+  <div class="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
     <!-- Animated background particles -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div
         v-for="i in 20"
         :key="i"
-        class="animate-float absolute rounded-full bg-indigo-200/20"
+        class="animate-float absolute rounded-full bg-yellow-200/20"
         :style="{
           width: `${Math.random() * 300 + 50}px`,
           height: `${Math.random() * 300 + 50}px`,
@@ -30,14 +30,14 @@
             <div class="group flex cursor-pointer items-center gap-3" @click="resetFilters">
               <div class="relative">
                 <MusicalNoteIcon
-                  class="h-8 w-8 text-indigo-600 transition-transform duration-300 group-hover:rotate-12"
+                  class="h-8 w-8 text-amber-700 transition-transform duration-300 group-hover:rotate-12"
                 />
                 <div
-                  class="absolute inset-0 rounded-full bg-indigo-400 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
+                  class="absolute inset-0 rounded-full bg-yellow-300 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
                 ></div>
               </div>
               <h1
-                class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-2xl font-bold text-gray-900 text-transparent"
+                class="bg-gradient-to-r from-amber-700 to-yellow-500 bg-clip-text text-2xl font-bold text-amber-950 text-transparent"
               >
                 Sheet Music Library
               </h1>
@@ -53,10 +53,10 @@
               >
                 <button class="group relative" @click="openAddModal">
                   <div
-                    class="absolute inset-0 rounded-full bg-indigo-400 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
+                    class="absolute inset-0 rounded-full bg-yellow-300 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
                   ></div>
                   <div
-                    class="relative flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    class="relative flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-700 to-yellow-500 px-4 py-2 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   >
                     <PlusIcon class="h-5 w-5" />
                     <span class="hidden sm:inline">Add New</span>
@@ -71,8 +71,8 @@
                 enter-from-class="opacity-0 translate-x-4"
                 enter-to-class="opacity-100 translate-x-0"
               >
-                <p class="hidden text-gray-600 md:block">
-                  <span class="font-semibold text-indigo-600">{{ filteredCount }}</span> pieces
+                <p class="hidden text-amber-700 md:block">
+                  <span class="font-semibold text-amber-700">{{ filteredCount }}</span> pieces
                   available
                 </p>
               </Transition>
@@ -85,7 +85,7 @@
                 enter-to-class="opacity-100 scale-100"
               >
                 <button
-                  class="rounded-full p-2 transition-all duration-300 hover:rotate-180 hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                  class="rounded-full p-2 transition-all duration-300 hover:rotate-180 hover:bg-yellow-100 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-none"
                   @click="refreshLibrary"
                   :class="{ 'animate-spin cursor-not-allowed': isRefreshing }"
                   :disabled="isRefreshing"
@@ -93,7 +93,7 @@
                 >
                   <ArrowPathIcon
                     class="h-5 w-5 transition-colors"
-                    :class="isRefreshing ? 'text-indigo-600' : 'text-gray-600'"
+                    :class="isRefreshing ? 'text-amber-700' : 'text-amber-700'"
                   />
                 </button>
               </Transition>
@@ -102,8 +102,8 @@
 
           <!-- Mobile counter -->
           <div class="mt-2 text-center md:hidden">
-            <p class="text-sm text-gray-600">
-              <span class="font-semibold text-indigo-600">{{ filteredCount }}</span> pieces
+            <p class="text-sm text-amber-700">
+              <span class="font-semibold text-amber-700">{{ filteredCount }}</span> pieces
               available
             </p>
           </div>
@@ -187,15 +187,15 @@
               class="rounded-2xl bg-white/80 py-12 text-center backdrop-blur-sm"
             >
               <div class="relative inline-block">
-                <MusicalNoteIcon class="mx-auto mb-4 h-16 w-16 animate-bounce text-gray-300" />
+                <MusicalNoteIcon class="mx-auto mb-4 h-16 w-16 animate-bounce text-yellow-300" />
                 <div
-                  class="absolute inset-0 animate-pulse rounded-full bg-indigo-200 opacity-30 blur-xl"
+                  class="absolute inset-0 animate-pulse rounded-full bg-yellow-200 opacity-30 blur-xl"
                 ></div>
               </div>
-              <h3 class="mb-2 text-lg font-medium text-gray-900">No sheet music found</h3>
-              <p class="mb-4 text-gray-600">Try adjusting your search or filters</p>
+              <h3 class="mb-2 text-lg font-medium text-amber-950">No sheet music found</h3>
+              <p class="mb-4 text-amber-700">Try adjusting your search or filters</p>
               <button
-                class="inline-flex items-center gap-2 font-medium text-indigo-600 transition-all duration-300 hover:scale-105 hover:text-indigo-700"
+                class="inline-flex items-center gap-2 font-medium text-amber-700 transition-all duration-300 hover:scale-105 hover:text-amber-800"
                 @click="resetFilters"
               >
                 <ArrowPathIcon class="h-4 w-4" />
@@ -218,7 +218,7 @@
     >
       <button
         v-if="showScrollTop"
-        class="group fixed right-8 bottom-8 z-50 rounded-full bg-indigo-600 p-3 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-indigo-700"
+        class="group fixed right-8 bottom-8 z-50 rounded-full bg-amber-700 p-3 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-amber-800"
         @click="scrollToTop"
       >
         <ArrowUpIcon class="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1" />

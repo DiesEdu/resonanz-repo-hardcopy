@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-2">
-    <h3 class="mb-3 font-semibold text-gray-700">Genres</h3>
+    <h3 class="mb-3 font-semibold text-amber-800">Genres</h3>
     <button
       v-for="genre in genres"
       :key="genre.id"
       @click="selectedGenre = genre.name"
       class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors"
-      :class="selectedGenre === genre.name ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-gray-100'"
+      :class="selectedGenre === genre.name ? 'bg-yellow-100 text-amber-800' : 'hover:bg-yellow-100'"
     >
       <span>{{ genre.name }}</span>
-      <span class="text-sm text-gray-500">{{ genre.count }}</span>
+      <span class="text-sm text-amber-600">{{ genre.count }}</span>
     </button>
   </div>
 </template>

@@ -34,19 +34,18 @@ const props = defineProps<{
   show?: boolean;
   customClass?: string;
   withGlow?: boolean;
-  glowColor?: "indigo" | "blue" | "purple" | "green";
+  glowColor?: "gold" | "yellow" | "white";
 }>();
 
 const isHovered = ref(false);
 
 const glowClass = computed(() => {
   const colors = {
-    indigo: "bg-indigo-400/10 shadow-lg shadow-indigo-500/20",
-    blue: "bg-blue-400/10 shadow-lg shadow-blue-500/20",
-    purple: "bg-purple-400/10 shadow-lg shadow-purple-500/20",
-    green: "bg-green-400/10 shadow-lg shadow-green-500/20",
+    gold: "bg-amber-400/15 shadow-lg shadow-amber-500/25",
+    yellow: "bg-yellow-300/20 shadow-lg shadow-yellow-400/25",
+    white: "bg-white/20 shadow-lg shadow-yellow-300/20",
   };
-  return colors[props.glowColor || "indigo"];
+  return colors[props.glowColor || "gold"];
 });
 </script>
 
