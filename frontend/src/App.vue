@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
+  <div class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
     <!-- Animated background particles -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div
@@ -61,6 +61,23 @@
                     <PlusIcon class="h-5 w-5" />
                     <span class="hidden sm:inline">Add New</span>
                   </div>
+                </button>
+              </Transition>
+
+              <!-- Theme toggle -->
+              <Transition
+                appear
+                enter-active-class="transition duration-500 delay-250"
+                enter-from-class="opacity-0 scale-0"
+                enter-to-class="opacity-100 scale-100"
+              >
+                <button
+                  class="rounded-full p-2 transition-all duration-300 hover:scale-105 hover:bg-yellow-100 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:outline-none"
+                  @click="toggleTheme"
+                  :title="isDarkTheme ? 'Switch to bright theme' : 'Switch to dark theme'"
+                >
+                  <SunIcon v-if="isDarkTheme" class="h-5 w-5 text-amber-700" />
+                  <MoonIcon v-else class="h-5 w-5 text-amber-700" />
                 </button>
               </Transition>
 
@@ -237,7 +254,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import { MusicalNoteIcon, ArrowPathIcon, ArrowUpIcon, PlusIcon } from "@heroicons/vue/24/outline";
+import {
+  MusicalNoteIcon,
+  ArrowPathIcon,
+  ArrowUpIcon,
+  PlusIcon,
+  SunIcon,
+  MoonIcon,
+} from "@heroicons/vue/24/outline";
 import { useMusicStore } from "./stores/musicStore";
 import { storeToRefs } from "pinia";
 import SearchBar from "./components/SearchBar.vue";
@@ -254,6 +278,7 @@ const filteredCount = computed(() => filteredSheetMusic.value.length); // ✅ Co
 
 const isLoading = ref(false);
 const isRefreshing = ref(false);
+const isDarkTheme = ref(false);
 const showScrollTop = ref(false);
 const showAddModal = ref(false);
 const editingSheet = ref<SheetMusic | null>(null);
@@ -273,6 +298,16 @@ const refreshLibrary = async () => {
 
   isRefreshing.value = false;
   isLoading.value = false;
+};
+
+const applyTheme = () => {
+  document.documentElement.classList.toggle("theme-dark", isDarkTheme.value);
+};
+
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  localStorage.setItem("sheet-music-theme", isDarkTheme.value ? "dark" : "light");
+  applyTheme();
 };
 
 const handleSaveSheetMusic = (sheet: SheetMusic) => {
@@ -310,6 +345,9 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  const savedTheme = localStorage.getItem("sheet-music-theme");
+  isDarkTheme.value = savedTheme === "dark";
+  applyTheme();
   window.addEventListener("scroll", handleScroll);
 });
 

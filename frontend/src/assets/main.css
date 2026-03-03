@@ -126,3 +126,67 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #d97706;
 }
+
+html.theme-dark {
+  color-scheme: dark;
+}
+
+html.theme-dark body {
+  background: #0f0a00;
+  color: #fffbeb;
+}
+
+html.theme-dark .app-shell {
+  background: linear-gradient(135deg, #120d02 0%, #241907 45%, #3a2406 100%);
+}
+
+html.theme-dark .bg-white,
+html.theme-dark .bg-white\/80,
+html.theme-dark .bg-white\/90 {
+  background-color: rgba(28, 20, 6, 0.9) !important;
+}
+
+html.theme-dark .text-amber-950,
+html.theme-dark .text-amber-900,
+html.theme-dark .text-amber-800,
+html.theme-dark .text-amber-700,
+html.theme-dark .text-amber-600 {
+  color: #fef3c7 !important;
+}
+
+html.theme-dark .text-yellow-300 {
+  color: #fcd34d !important;
+}
+
+html.theme-dark .shadow-sm,
+html.theme-dark .shadow-md,
+html.theme-dark .shadow-lg,
+html.theme-dark .shadow-xl {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.theme-dark .border-yellow-300,
+html.theme-dark .border-yellow-200 {
+  border-color: #b45309 !important;
+}
+
+html.theme-dark input,
+html.theme-dark select,
+html.theme-dark textarea {
+  background-color: rgba(18, 13, 2, 0.9);
+  color: #fffbeb;
+  border-color: #b45309;
+}
+
+html.theme-dark input::placeholder,
+html.theme-dark textarea::placeholder {
+  color: #fcd34d;
+}
+
+html.theme-dark .bg-yellow-100 {
+  background-color: rgba(133, 77, 14, 0.35) !important;
+}
+
+html.theme-dark .hover\:bg-yellow-100:hover {
+  background-color: rgba(133, 77, 14, 0.55) !important;
+}
