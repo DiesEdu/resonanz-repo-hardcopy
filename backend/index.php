@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../src/Env.php';
-require_once __DIR__ . '/../src/Database.php';
-require_once __DIR__ . '/../src/LibraryRepository.php';
+require_once __DIR__ . '/config/Env.php';
+require_once __DIR__ . '/config/Database.php';
+require_once __DIR__ . '/controller/LibraryRepository.php';
 
 use App\Database;
 use App\Env;
 use App\LibraryRepository;
 
-Env::load(__DIR__ . '/../.env');
+Env::load(__DIR__ . '/.env');
 
 $configuredOrigins = Env::get('CORS_ORIGIN', '*') ?? '*';
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';

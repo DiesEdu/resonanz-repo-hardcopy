@@ -18,7 +18,7 @@ Use `backend/.env` (existing file) with:
 From `backend/`:
 
 ```bash
-php -S 0.0.0.0:3000 -t public public/index.php
+php -S 0.0.0.0:3000 index.php
 ```
 
 The API endpoints stay the same:
