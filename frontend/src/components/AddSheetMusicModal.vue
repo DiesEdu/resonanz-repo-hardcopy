@@ -681,6 +681,7 @@ const resetForm = () => {
   formData.title = "";
   formData.subtitle = "";
   formData.composer = "";
+  formData.arranger = "";
   formData.genre = "";
   formData.difficulty = "";
   formData.pages = 1;
