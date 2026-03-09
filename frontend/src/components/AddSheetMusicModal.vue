@@ -87,6 +87,17 @@
               <p v-if="errors.composer" class="text-sm text-amber-800">{{ errors.composer }}</p>
             </div>
 
+            <!-- Arranger -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-amber-800"> Arranger </label>
+              <input
+                v-model="formData.arranger"
+                type="text"
+                class="w-full rounded-lg border border-yellow-300 px-4 py-2 transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500"
+                placeholder="e.g., John Doe"
+              />
+            </div>
+
             <!-- Genre and Difficulty Row -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div class="space-y-2">
@@ -350,6 +361,7 @@ const formData = reactive({
   title: "",
   subtitle: "",
   composer: "",
+  arranger: "",
   genre: "",
   difficulty: "",
   pages: 1,

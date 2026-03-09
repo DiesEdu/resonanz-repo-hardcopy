@@ -46,12 +46,28 @@ try {
     $roleExists = (int) ($roleColumn['total'] ?? 0) > 0;
 
     if (!$roleExists) {
-      $pdo->exec("ALTER TABLE users ADD COLUMN role ENUM('admin', 'librarian', 'member') NOT NULL DEFAULT 'member' AFTER email");
-      $pdo->exec("CREATE INDEX idx_users_role ON users (role)");
-      echo "Users role column added" . PHP_EOL;
+        $pdo->exec("ALTER TABLE users ADD COLUMN role ENUM('admin', 'librarian', 'member') NOT NULL DEFAULT 'member' AFTER email");
+        $pdo->exec("CREATE INDEX idx_users_role ON users (role)");
+        echo "Users role column added" . PHP_EOL;
     }
 
-    echo "Users table created/verified" . PHP_EOL;
+    $arrangerColumnExistsStmt = $pdo->query("
+    SELECT 1
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'library'
+    AND COLUMN_NAME = 'arranger'
+    LIMIT 1
+");
+
+    $arrangerExists = $arrangerColumnExistsStmt->fetch(PDO::FETCH_ASSOC) !== false;
+
+    if (!$arrangerExists) {
+        $pdo->exec("ALTER TABLE `library` ADD COLUMN arranger VARCHAR(255) NULL AFTER composer");
+        echo "Library arranger column added" . PHP_EOL;
+    }
+
+    echo "Users, Library table created/verified" . PHP_EOL;
     echo "Database adjustment complete!" . PHP_EOL;
     exit(0);
 } catch (PDOException $error) {
