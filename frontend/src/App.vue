@@ -1,7 +1,10 @@
 <template>
   <AuthPage v-if="!isAuthenticated" @authenticated="handleAuthenticated" />
 
-  <div v-else class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
+  <div
+    v-else
+    class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40"
+  >
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div
         v-for="i in 20"
@@ -63,8 +66,10 @@
                 </button>
               </Transition>
 
-              <div class="hidden rounded-full bg-amber-100 px-3 py-1 text-xs text-amber-800 md:flex md:items-center md:gap-2">
-                <span class="font-semibold uppercase">{{ currentUser?.role }}</span>
+              <div
+                class="hidden rounded-full px-3 py-1 text-xs text-amber-800 md:flex md:items-center md:gap-2"
+              >
+                <span class="font-semibold text-amber-800 uppercase">{{ currentUser?.role }}</span>
                 <span>{{ currentUser?.email }}</span>
               </div>
 
@@ -127,8 +132,7 @@
 
           <div class="mt-2 text-center md:hidden">
             <p class="text-sm text-amber-700">
-              <span class="font-semibold text-amber-700">{{ filteredCount }}</span> pieces
-              available
+              <span class="font-semibold text-amber-700">{{ filteredCount }}</span> pieces available
             </p>
           </div>
         </div>
@@ -186,7 +190,7 @@
             move-class="transition duration-500"
           >
             <MusicCard
-              v-for="(music, index) in filteredSheetMusic"
+              v-for="(music, index) in paginatedSheetMusic"
               :key="music.id"
               :music="music"
               :style="{ animationDelay: `${index * 100}ms` }"
@@ -194,6 +198,41 @@
               @edit="handleEditRequest"
             />
           </TransitionGroup>
+
+          <div
+            v-if="filteredSheetMusic.length > 0"
+            class="mt-8 flex flex-col items-center justify-between gap-4 rounded-xl bg-white/80 px-4 py-3 text-sm text-amber-800 shadow-sm backdrop-blur-sm md:flex-row"
+          >
+            <p>
+              Showing
+              <span class="font-semibold">{{ currentPageStart }}</span>
+              -
+              <span class="font-semibold">{{ currentPageEnd }}</span>
+              of
+              <span class="font-semibold">{{ filteredSheetMusic.length }}</span>
+              pieces
+            </p>
+
+            <div class="flex items-center gap-2">
+              <button
+                class="rounded-md border border-amber-300 px-3 py-1.5 font-semibold transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="currentPage === 1"
+                @click="goToPreviousPage"
+              >
+                Previous
+              </button>
+              <span class="min-w-24 text-center font-semibold">
+                Page {{ currentPage }} / {{ totalPages }}
+              </span>
+              <button
+                class="rounded-md border border-amber-300 px-3 py-1.5 font-semibold transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="currentPage === totalPages"
+                @click="goToNextPage"
+              >
+                Next
+              </button>
+            </div>
+          </div>
 
           <Transition
             enter-active-class="transition duration-500"
@@ -257,7 +296,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import {
   MusicalNoteIcon,
   ArrowPathIcon,
@@ -283,6 +322,7 @@ const AUTH_STORAGE_KEY = "sheet-music-auth-user";
 const musicStore = useMusicStore();
 const { filteredSheetMusic } = storeToRefs(musicStore);
 const filteredCount = computed(() => filteredSheetMusic.value.length);
+const ITEMS_PER_PAGE = 9;
 
 const isLoading = ref(false);
 const isRefreshing = ref(false);
@@ -291,17 +331,44 @@ const showScrollTop = ref(false);
 const showAddModal = ref(false);
 const editingSheet = ref<SheetMusic | null>(null);
 const currentUser = ref<User | null>(null);
+const currentPage = ref(1);
 
 const isAuthenticated = computed(() => currentUser.value !== null);
 const canEditSheetMusic = computed(() => currentUser.value?.role === "admin");
 const canManageUsers = computed(
   () => currentUser.value?.role === "admin" || currentUser.value?.role === "librarian",
 );
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredSheetMusic.value.length / ITEMS_PER_PAGE)),
+);
+const paginatedSheetMusic = computed(() => {
+  const startIndex = (currentPage.value - 1) * ITEMS_PER_PAGE;
+  return filteredSheetMusic.value.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+});
+const currentPageStart = computed(() =>
+  filteredSheetMusic.value.length === 0 ? 0 : (currentPage.value - 1) * ITEMS_PER_PAGE + 1,
+);
+const currentPageEnd = computed(() =>
+  Math.min(currentPage.value * ITEMS_PER_PAGE, filteredSheetMusic.value.length),
+);
+
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+};
+
+const goToNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+  }
+};
 
 const resetFilters = () => {
   musicStore.searchQuery = "";
   musicStore.selectedGenre = "All";
   musicStore.selectedDifficulty = "All";
+  currentPage.value = 1;
 };
 
 const refreshLibrary = async () => {
@@ -368,9 +435,19 @@ const handleLogout = () => {
   currentUser.value = null;
   showAddModal.value = false;
   editingSheet.value = null;
+  currentPage.value = 1;
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
 
+watch(filteredSheetMusic, (newList) => {
+  const latestTotalPages = Math.max(1, Math.ceil(newList.length / ITEMS_PER_PAGE));
+  if (currentPage.value > latestTotalPages) {
+    currentPage.value = latestTotalPages;
+  }
+  if (currentPage.value < 1) {
+    currentPage.value = 1;
+  }
+});
 onMounted(() => {
   const savedTheme = localStorage.getItem("sheet-music-theme");
   isDarkTheme.value = savedTheme === "dark";
@@ -414,7 +491,3 @@ onUnmounted(() => {
   animation: float linear infinite;
 }
 </style>
-
-
-
-
