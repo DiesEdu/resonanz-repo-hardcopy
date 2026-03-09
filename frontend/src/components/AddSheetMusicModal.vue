@@ -200,15 +200,15 @@
               <p class="text-xs text-amber-600">
                 Choose a section to select one or more instruments.
               </p>
-              <div v-if="formData.orchestraCollections.length" class="flex flex-wrap gap-2 pt-1">
+              <div v-if="orchestraCollectionDisplayItems.length" class="flex flex-wrap gap-2 pt-1">
                 <button
-                  v-for="(selected, index) in formData.orchestraCollections"
-                  :key="`${selected}-${index}`"
+                  v-for="item in orchestraCollectionDisplayItems"
+                  :key="item.rawValue"
                   type="button"
                   class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-amber-800 transition-colors hover:bg-yellow-200"
-                  @click="removeOrchestraCollectionValue(index)"
+                  @click="removeOrchestraCollectionValue(item.rawValue)"
                 >
-                  {{ selected }}
+                  {{ item.label }}
                 </button>
               </div>
             </div>
@@ -421,6 +421,7 @@ const woodwinds = [
 ];
 const brass = ["Trumpet", "Horn", "Trombone", "Tuba"];
 const percussion = [
+  "Percussion",
   "Snare Drum",
   "Bass Drum",
   "Cymbals",
@@ -516,15 +517,57 @@ const instrumentKeyDefaults: Record<string, string> = {
   "English Horn": "F",
 };
 
+const stripOrchestraCountPrefix = (value: string) => value.replace(/^\d+\s+/, "").trim();
+
+const pluralizeWord = (word: string) => {
+  if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(word)) return `${word}es`;
+  return `${word}s`;
+};
+
+const pluralizeInstrumentLabel = (value: string) => {
+  const [namePart = "", keyPart] = value.split(" in ");
+  const parts = namePart.split(" ");
+  const lastWord = parts.pop();
+  if (!lastWord) return value;
+  const pluralName = [...parts, pluralizeWord(lastWord)].join(" ");
+  return keyPart ? `${pluralName} in ${keyPart}` : pluralName;
+};
+
 const getOrchestraCollectionBase = (value: string) => {
-  const matched = allOrchestraInstruments.find((instrument) => value.startsWith(instrument));
+  const normalizedValue = stripOrchestraCountPrefix(value);
+  const matched = allOrchestraInstruments.find((instrument) =>
+    normalizedValue.startsWith(instrument),
+  );
   if (matched) return matched;
-  if (value.toLowerCase().includes("saxophone")) return "Saxophone";
-  return value;
+  if (normalizedValue.toLowerCase().includes("saxophone")) return "Saxophone";
+  return normalizedValue;
 };
 
 const hasOrchestraCollectionInstrument = (base: string) =>
   formData.orchestraCollections.some((value) => getOrchestraCollectionBase(value) === base);
+
+const orchestraCollectionDisplayItems = computed(() => {
+  const counts: Record<string, number> = {};
+  const order: string[] = [];
+
+  formData.orchestraCollections.forEach((value) => {
+    const rawValue = stripOrchestraCountPrefix(value);
+    if (!counts[rawValue]) {
+      order.push(rawValue);
+      counts[rawValue] = 0;
+    }
+    counts[rawValue] += 1;
+  });
+
+  return order.map((rawValue) => {
+    const count = counts[rawValue] || 0;
+    return {
+      rawValue,
+      label: count > 1 ? `${count} ${pluralizeInstrumentLabel(rawValue)}` : rawValue,
+    };
+  });
+});
 
 const withSaxophoneDetail = () => {
   const input = window
@@ -564,7 +607,11 @@ const toggleOrchestraCollectionValue = (value: string) => {
   formData.orchestraCollections.push(withInstrumentKeyDetail(value));
 };
 
-const removeOrchestraCollectionValue = (index: number) => {
+const removeOrchestraCollectionValue = (rawValue: string) => {
+  const index = formData.orchestraCollections.findIndex(
+    (value) => stripOrchestraCountPrefix(value) === rawValue,
+  );
+  if (index === -1) return;
   formData.orchestraCollections.splice(index, 1);
 };
 
@@ -660,6 +707,7 @@ const populateForm = (sheet: SheetMusic) => {
   formData.title = sheet.title || "";
   formData.subtitle = sheet.subtitle || "";
   formData.composer = sheet.composer || "";
+  formData.arranger = sheet.arranger || "";
   formData.genre = sheet.genre || "";
   formData.difficulty = sheet.difficulty || "";
   formData.pages = sheet.pages > 0 ? sheet.pages : 1;
@@ -705,4 +753,3 @@ watch(
   },
 );
 </script>
-
