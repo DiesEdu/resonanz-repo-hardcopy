@@ -501,56 +501,42 @@ const closeOrchestraPopup = () => {
   showOrchestraPopup.value = false;
 };
 
-const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const allOrchestraInstruments = Object.values(orchestraCollectionMap)
+  .flat()
+  .sort((a, b) => b.length - a.length);
 
-const getOrchestraCollectionBase = (value: string) => value.replace(/\s\d+$/, "").trim();
-
-const getOrchestraCollectionNumber = (value: string, base: string) => {
-  const match = value.match(new RegExp(`^${escapeRegExp(base)}(?:\\s(\\d+))?$`));
-  if (!match) return 0;
-  return match[1] ? Number.parseInt(match[1], 10) : 1;
+const instrumentKeyDefaults: Record<string, string> = {
+  Trumpet: "Bb",
+  Horn: "F",
+  Clarinet: "Bb",
+  "Bass Clarinet": "Bb",
+  "English Horn": "F",
 };
 
+const getOrchestraCollectionBase = (value: string) =>
+  allOrchestraInstruments.find((instrument) => value.startsWith(instrument)) || value;
+
 const hasOrchestraCollectionInstrument = (base: string) =>
-  formData.orchestraCollections.some((value) => getOrchestraCollectionNumber(value, base) > 0);
+  formData.orchestraCollections.some((value) => getOrchestraCollectionBase(value) === base);
 
-const normalizeOrchestraCollectionInstrument = (base: string) => {
-  const matchingIndexes = formData.orchestraCollections.reduce<number[]>(
-    (indexes, selected, idx) => {
-      if (getOrchestraCollectionNumber(selected, base) > 0) {
-        indexes.push(idx);
-      }
-      return indexes;
-    },
-    [],
-  );
-
-  if (matchingIndexes.length === 1) {
-    const index = matchingIndexes[0];
-    if (index !== undefined) {
-      formData.orchestraCollections[index] = base;
-    }
-    return;
-  }
-
-  if (matchingIndexes.length > 1) {
-    matchingIndexes.forEach((idx, order) => {
-      formData.orchestraCollections[idx] = `${base} ${order + 1}`;
-    });
-  }
+const withInstrumentKeyDetail = (instrument: string) => {
+  if (!instrumentKeyDefaults[instrument]) return instrument;
+  const key = window
+    .prompt(
+      `Specify key for ${instrument} (for example: Bb, F, Eb). Leave empty to keep without key detail.`,
+      instrumentKeyDefaults[instrument],
+    )
+    ?.trim();
+  if (!key) return instrument;
+  return `${instrument} in ${key}`;
 };
 
 const toggleOrchestraCollectionValue = (value: string) => {
-  formData.orchestraCollections.push(value);
-  normalizeOrchestraCollectionInstrument(value);
+  formData.orchestraCollections.push(withInstrumentKeyDetail(value));
 };
 
 const removeOrchestraCollectionValue = (index: number) => {
-  const removedValue = formData.orchestraCollections[index];
-  if (!removedValue) return;
-  const base = getOrchestraCollectionBase(removedValue);
   formData.orchestraCollections.splice(index, 1);
-  normalizeOrchestraCollectionInstrument(base);
 };
 
 // Handle image error
@@ -588,6 +574,7 @@ const handleSubmit = async () => {
     title: formData.title,
     subtitle: formData.subtitle,
     composer: formData.composer,
+    arranger: formData.arranger,
     genre: formData.genre,
     difficulty: formData.difficulty as "Beginner" | "Intermediate" | "Advanced",
     pages: ifOrchestraCollections.value && !ifFullScore.value ? 0 : formData.pages,
@@ -689,3 +676,4 @@ watch(
   },
 );
 </script>
+

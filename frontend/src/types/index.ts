@@ -3,6 +3,7 @@ export interface SheetMusic {
   title: string;
   subtitle: string;
   composer: string;
+  arranger: string;
   genre: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   pages: number;
