@@ -417,6 +417,7 @@ const woodwinds = [
   "Clarinet",
   "Bass Clarinet",
   "Bassoon",
+  "Saxophone",
 ];
 const brass = ["Trumpet", "Horn", "Trombone", "Tuba"];
 const percussion = [
@@ -505,6 +506,8 @@ const allOrchestraInstruments = Object.values(orchestraCollectionMap)
   .flat()
   .sort((a, b) => b.length - a.length);
 
+const saxophoneOptions = ["Soprano", "Alto", "Tenor", "Bass"] as const;
+
 const instrumentKeyDefaults: Record<string, string> = {
   Trumpet: "Bb",
   Horn: "F",
@@ -513,13 +516,39 @@ const instrumentKeyDefaults: Record<string, string> = {
   "English Horn": "F",
 };
 
-const getOrchestraCollectionBase = (value: string) =>
-  allOrchestraInstruments.find((instrument) => value.startsWith(instrument)) || value;
+const getOrchestraCollectionBase = (value: string) => {
+  const matched = allOrchestraInstruments.find((instrument) => value.startsWith(instrument));
+  if (matched) return matched;
+  if (value.toLowerCase().includes("saxophone")) return "Saxophone";
+  return value;
+};
 
 const hasOrchestraCollectionInstrument = (base: string) =>
   formData.orchestraCollections.some((value) => getOrchestraCollectionBase(value) === base);
 
+const withSaxophoneDetail = () => {
+  const input = window
+    .prompt(
+      "Choose saxophone type: Soprano, Alto, Tenor, or Bass (you can type name or 1-4).",
+      "Alto",
+    )
+    ?.trim();
+
+  if (!input) return "Saxophone";
+
+  const index = Number.parseInt(input, 10);
+  if (!Number.isNaN(index) && index >= 1 && index <= saxophoneOptions.length) {
+    return `${saxophoneOptions[index - 1]} Saxophone`;
+  }
+
+  const normalizedInput = input.toLowerCase();
+  const type = saxophoneOptions.find((option) => option.toLowerCase() === normalizedInput);
+  if (!type) return "Saxophone";
+  return `${type} Saxophone`;
+};
+
 const withInstrumentKeyDetail = (instrument: string) => {
+  if (instrument === "Saxophone") return withSaxophoneDetail();
   if (!instrumentKeyDefaults[instrument]) return instrument;
   const key = window
     .prompt(
