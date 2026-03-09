@@ -161,7 +161,7 @@
                     </div>
                     <div class="flex items-center gap-2 text-amber-700">
                       <MusicalNoteIcon class="h-5 w-5" />
-                      <span>{{ music.instruments.join(", ") }}</span>
+                      <span>{{ groupedInstrumentsText }}</span>
                     </div>
                     <!-- <div class="flex items-center gap-2 text-amber-700">
                       <CalendarIcon class="h-5 w-5" />
@@ -227,6 +227,44 @@ const downloadText = ref("Download Sheet Music");
 
 const difficultyColor = computed(() => musicStore.getDifficultyColor(props.music.difficulty));
 
+const stripInstrumentCountPrefix = (value: string) => value.replace(/^\d+\s+/, "").trim();
+
+const pluralizeWord = (word: string) => {
+  if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(word)) return `${word}es`;
+  return `${word}s`;
+};
+
+const pluralizeInstrumentLabel = (value: string) => {
+  const [namePart = "", keyPart] = value.split(" in ");
+  const parts = namePart.split(" ");
+  const lastWord = parts.pop();
+  if (!lastWord) return value;
+  const pluralName = [...parts, pluralizeWord(lastWord)].join(" ");
+  return keyPart ? `${pluralName} in ${keyPart}` : pluralName;
+};
+
+const groupedInstruments = computed(() => {
+  const counts: Record<string, number> = {};
+  const order: string[] = [];
+
+  props.music.instruments.forEach((value) => {
+    const rawValue = stripInstrumentCountPrefix(value);
+    if (!counts[rawValue]) {
+      order.push(rawValue);
+      counts[rawValue] = 0;
+    }
+    counts[rawValue] += 1;
+  });
+
+  return order.map((rawValue) => {
+    const count = counts[rawValue] || 0;
+    return count > 1 ? `${count} ${pluralizeInstrumentLabel(rawValue)}` : rawValue;
+  });
+});
+
+const groupedInstrumentsText = computed(() => groupedInstruments.value.join(", "));
+
 const scoreDisplay = computed(() => {
   if (
     props.music.score_type === "Full Score" ||
@@ -234,7 +272,7 @@ const scoreDisplay = computed(() => {
   ) {
     return props.music.score_type;
   }
-  return props.music.instruments.join(", ");
+  return groupedInstrumentsText.value;
 });
 
 const formatDate = (date: string) => {
@@ -284,11 +322,3 @@ const handleEdit = () => {
   animation: ripple 1.5s ease-out infinite;
 }
 </style>
-
-
-
-
-
-
-
-
