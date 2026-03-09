@@ -1,6 +1,7 @@
 <template>
-  <div class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
-    <!-- Animated background particles -->
+  <AuthPage v-if="!isAuthenticated" @authenticated="handleAuthenticated" />
+
+  <div v-else class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div
         v-for="i in 20"
@@ -17,7 +18,6 @@
       ></div>
     </div>
 
-    <!-- Header with animation -->
     <Transition
       appear
       enter-active-class="transition duration-700 ease-out"
@@ -44,14 +44,13 @@
             </div>
 
             <div class="flex items-center gap-4">
-              <!-- Add New Button -->
               <Transition
                 appear
                 enter-active-class="transition duration-500 delay-200"
                 enter-from-class="opacity-0 scale-0"
                 enter-to-class="opacity-100 scale-100"
               >
-                <button class="group relative" @click="openAddModal">
+                <button v-if="canEditSheetMusic" class="group relative" @click="openAddModal">
                   <div
                     class="absolute inset-0 rounded-full bg-yellow-300 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-50"
                   ></div>
@@ -64,7 +63,18 @@
                 </button>
               </Transition>
 
-              <!-- Theme toggle -->
+              <div class="hidden rounded-full bg-amber-100 px-3 py-1 text-xs text-amber-800 md:flex md:items-center md:gap-2">
+                <span class="font-semibold uppercase">{{ currentUser?.role }}</span>
+                <span>{{ currentUser?.email }}</span>
+              </div>
+
+              <button
+                class="rounded-lg border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100"
+                @click="handleLogout"
+              >
+                Logout
+              </button>
+
               <Transition
                 appear
                 enter-active-class="transition duration-500 delay-250"
@@ -81,7 +91,6 @@
                 </button>
               </Transition>
 
-              <!-- Counter animation -->
               <Transition
                 appear
                 enter-active-class="transition duration-500 delay-300"
@@ -94,7 +103,6 @@
                 </p>
               </Transition>
 
-              <!-- Refresh button with animation -->
               <Transition
                 appear
                 enter-active-class="transition duration-500 delay-400"
@@ -117,7 +125,6 @@
             </div>
           </div>
 
-          <!-- Mobile counter -->
           <div class="mt-2 text-center md:hidden">
             <p class="text-sm text-amber-700">
               <span class="font-semibold text-amber-700">{{ filteredCount }}</span> pieces
@@ -128,9 +135,7 @@
       </header>
     </Transition>
 
-    <!-- Main Content -->
     <main class="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <!-- Search Bar with animation -->
       <Transition
         appear
         enter-active-class="transition duration-500 delay-100"
@@ -143,7 +148,6 @@
       </Transition>
 
       <div class="flex flex-col gap-8 lg:flex-row">
-        <!-- Filters Sidebar with animations -->
         <Transition
           appear
           enter-active-class="transition duration-500 delay-200"
@@ -164,14 +168,11 @@
           </aside>
         </Transition>
 
-        <!-- Music Grid -->
         <div class="flex-1">
-          <!-- Loading state -->
           <div v-if="isLoading" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <LoadingSkeleton :count="6" />
           </div>
 
-          <!-- Content with staggered animations -->
           <TransitionGroup
             v-else-if="filteredSheetMusic.length > 0"
             tag="div"
@@ -189,11 +190,11 @@
               :key="music.id"
               :music="music"
               :style="{ animationDelay: `${index * 100}ms` }"
+              :can-edit="canEditSheetMusic"
               @edit="handleEditRequest"
             />
           </TransitionGroup>
 
-          <!-- Empty state with animation -->
           <Transition
             enter-active-class="transition duration-500"
             enter-from-class="opacity-0 scale-90"
@@ -222,9 +223,12 @@
           </Transition>
         </div>
       </div>
+
+      <div v-if="canManageUsers" class="mt-10">
+        <UserManagement />
+      </div>
     </main>
 
-    <!-- Floating action button with animation -->
     <Transition
       enter-active-class="transition duration-300"
       enter-from-class="opacity-0 scale-0"
@@ -242,8 +246,8 @@
       </button>
     </Transition>
 
-    <!-- Add Sheet Music Modal -->
     <AddSheetMusicModal
+      v-if="canEditSheetMusic"
       :show="showAddModal"
       :edit-sheet="editingSheet"
       @close="handleCloseModal"
@@ -270,11 +274,15 @@ import DifficultyFilter from "./components/DifficultyFilter.vue";
 import MusicCard from "./components/MusicCard.vue";
 import LoadingSkeleton from "./components/LoadingSkeleton.vue";
 import AddSheetMusicModal from "./components/AddSheetMusicModal.vue";
-import type { SheetMusic } from "./types";
+import UserManagement from "./components/UserManagement.vue";
+import AuthPage from "./components/AuthPage.vue";
+import type { SheetMusic, User } from "./types";
+
+const AUTH_STORAGE_KEY = "sheet-music-auth-user";
 
 const musicStore = useMusicStore();
 const { filteredSheetMusic } = storeToRefs(musicStore);
-const filteredCount = computed(() => filteredSheetMusic.value.length); // ✅ Correct - gets array length
+const filteredCount = computed(() => filteredSheetMusic.value.length);
 
 const isLoading = ref(false);
 const isRefreshing = ref(false);
@@ -282,6 +290,13 @@ const isDarkTheme = ref(false);
 const showScrollTop = ref(false);
 const showAddModal = ref(false);
 const editingSheet = ref<SheetMusic | null>(null);
+const currentUser = ref<User | null>(null);
+
+const isAuthenticated = computed(() => currentUser.value !== null);
+const canEditSheetMusic = computed(() => currentUser.value?.role === "admin");
+const canManageUsers = computed(
+  () => currentUser.value?.role === "admin" || currentUser.value?.role === "librarian",
+);
 
 const resetFilters = () => {
   musicStore.searchQuery = "";
@@ -293,7 +308,6 @@ const refreshLibrary = async () => {
   isRefreshing.value = true;
   isLoading.value = true;
 
-  // Simulate API call
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
   isRefreshing.value = false;
@@ -311,17 +325,17 @@ const toggleTheme = () => {
 };
 
 const handleSaveSheetMusic = (sheet: SheetMusic) => {
+  if (!canEditSheetMusic.value) return;
   if (editingSheet.value) {
-    console.log("Updating sheet music:", sheet);
     musicStore.updateSheetMusic(sheet);
   } else {
-    console.log("Adding new sheet music:", sheet);
     musicStore.addSheetMusic(sheet);
   }
   editingSheet.value = null;
 };
 
 const handleEditRequest = (music: SheetMusic) => {
+  if (!canEditSheetMusic.value) return;
   editingSheet.value = { ...music, instruments: [...music.instruments] };
   showAddModal.value = true;
 };
@@ -332,6 +346,7 @@ const handleCloseModal = () => {
 };
 
 const openAddModal = () => {
+  if (!canEditSheetMusic.value) return;
   editingSheet.value = null;
   showAddModal.value = true;
 };
@@ -344,10 +359,32 @@ const handleScroll = () => {
   showScrollTop.value = window.scrollY > 400;
 };
 
+const handleAuthenticated = (user: User) => {
+  currentUser.value = user;
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+};
+
+const handleLogout = () => {
+  currentUser.value = null;
+  showAddModal.value = false;
+  editingSheet.value = null;
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+};
+
 onMounted(() => {
   const savedTheme = localStorage.getItem("sheet-music-theme");
   isDarkTheme.value = savedTheme === "dark";
   applyTheme();
+
+  const savedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+  if (savedAuth) {
+    try {
+      currentUser.value = JSON.parse(savedAuth) as User;
+    } catch {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  }
+
   window.addEventListener("scroll", handleScroll);
 });
 
@@ -377,3 +414,7 @@ onUnmounted(() => {
   animation: float linear infinite;
 }
 </style>
+
+
+
+

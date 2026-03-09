@@ -24,11 +24,18 @@ php -S 0.0.0.0:3000 index.php
 The API endpoints stay the same:
 - `GET /`
 - `GET /api/health`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 - `GET /api/library`
 - `GET /api/library/{id}`
 - `POST /api/library`
 - `PUT /api/library/{id}`
 - `DELETE /api/library/{id}`
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `POST /api/users`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
 
 ## Database scripts
 From `backend/`:
@@ -37,3 +44,7 @@ From `backend/`:
 php scripts/initDatabase.php
 php scripts/adjustDatabase.php
 ```
+
+
+
+

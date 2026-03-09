@@ -172,6 +172,7 @@
 
                 <button
                   class="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 text-lg text-white transition-colors hover:bg-amber-600"
+                  v-if="props.canEdit"
                   @click="handleEdit"
                 >
                   <PencilSquareIcon class="h-5 w-5" />
@@ -206,9 +207,15 @@ import type { SheetMusic } from "@/types";
 import { useMusicStore } from "@/stores/musicStore";
 import AnimatedCard from "./AnimatedCard.vue";
 
-const props = defineProps<{
-  music: SheetMusic;
-}>();
+const props = withDefaults(
+  defineProps<{
+    music: SheetMusic;
+    canEdit?: boolean;
+  }>(),
+  {
+    canEdit: false,
+  },
+);
 const emit = defineEmits<{
   (e: "edit", music: SheetMusic): void;
 }>();
@@ -255,6 +262,7 @@ const handleDownload = (e: Event) => {
 };
 
 const handleEdit = () => {
+  if (!props.canEdit) return;
   showDetails.value = false;
   emit("edit", props.music);
 };
@@ -276,3 +284,11 @@ const handleEdit = () => {
   animation: ripple 1.5s ease-out infinite;
 }
 </style>
+
+
+
+
+
+
+
+

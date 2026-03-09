@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../src/Env.php';
+require_once __DIR__ . '/../config/Env.php';
 
 use App\Env;
 
@@ -66,10 +66,12 @@ try {
             id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(120) NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
+            role ENUM('admin', 'librarian', 'member') NOT NULL DEFAULT 'member',
             password_hash VARCHAR(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_users_email (email)
+            INDEX idx_users_email (email),
+            INDEX idx_users_role (role)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     );
 
@@ -80,4 +82,3 @@ try {
     fwrite(STDERR, 'Initialization failed: ' . $error->getMessage() . PHP_EOL);
     exit(1);
 }
-

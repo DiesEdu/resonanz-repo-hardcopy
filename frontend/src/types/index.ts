@@ -13,6 +13,17 @@ export interface SheetMusic {
   score_type: string;
 }
 
+export type UserRole = "admin" | "librarian" | "member";
+
+export interface User {
+  id: number;
+  name: string | null;
+  email: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Genre {
   id: number;
   name: string;

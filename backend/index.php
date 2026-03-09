@@ -5,10 +5,12 @@ declare(strict_types=1);
 require_once __DIR__ . '/config/Env.php';
 require_once __DIR__ . '/config/Database.php';
 require_once __DIR__ . '/controller/LibraryRepository.php';
+require_once __DIR__ . '/controller/UserRepository.php';
 
 use App\Database;
 use App\Env;
 use App\LibraryRepository;
+use App\UserRepository;
 
 Env::load(__DIR__ . '/.env');
 
@@ -80,6 +82,80 @@ function validatePayload(array $body, bool $isUpdate = false): array
     return $errors;
 }
 
+function validateUserPayload(array $body, bool $isUpdate = false): array
+{
+    $errors = [];
+    $allowedRoles = ['admin', 'librarian', 'member'];
+
+    if (!$isUpdate || array_key_exists('name', $body)) {
+        $name = trim((string) ($body['name'] ?? ''));
+        if (array_key_exists('name', $body) && $name !== '' && mb_strlen($name) > 120) {
+            $errors[] = ['field' => 'name', 'msg' => 'Name must be 120 characters or less'];
+        }
+    }
+
+    if (!$isUpdate || array_key_exists('email', $body)) {
+        $email = trim((string) ($body['email'] ?? ''));
+        if ($email === '') {
+            $errors[] = ['field' => 'email', 'msg' => $isUpdate ? 'Email cannot be empty' : 'Email is required'];
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = ['field' => 'email', 'msg' => 'Email format is invalid'];
+        }
+    }
+
+    if (!$isUpdate || array_key_exists('password', $body)) {
+        $password = (string) ($body['password'] ?? '');
+        if ($password === '') {
+            $errors[] = [
+                'field' => 'password',
+                'msg' => $isUpdate ? 'Password cannot be empty when provided' : 'Password is required',
+            ];
+        } elseif (strlen($password) < 6) {
+            $errors[] = ['field' => 'password', 'msg' => 'Password must be at least 6 characters'];
+        }
+    }
+
+    if (!$isUpdate || array_key_exists('role', $body)) {
+        $role = strtolower(trim((string) ($body['role'] ?? '')));
+        if (!in_array($role, $allowedRoles, true)) {
+            $errors[] = [
+                'field' => 'role',
+                'msg' => 'Role must be one of admin, librarian, member',
+            ];
+        }
+    }
+
+    return $errors;
+}
+
+function validateAuthPayload(array $body, bool $isRegister = false): array
+{
+    $errors = [];
+
+    $email = trim((string) ($body['email'] ?? ''));
+    if ($email === '') {
+        $errors[] = ['field' => 'email', 'msg' => 'Email is required'];
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = ['field' => 'email', 'msg' => 'Email format is invalid'];
+    }
+
+    $password = (string) ($body['password'] ?? '');
+    if ($password === '') {
+        $errors[] = ['field' => 'password', 'msg' => 'Password is required'];
+    } elseif ($isRegister && strlen($password) < 6) {
+        $errors[] = ['field' => 'password', 'msg' => 'Password must be at least 6 characters'];
+    }
+
+    if ($isRegister && array_key_exists('name', $body)) {
+        $name = trim((string) $body['name']);
+        if ($name !== '' && mb_strlen($name) > 120) {
+            $errors[] = ['field' => 'name', 'msg' => 'Name must be 120 characters or less'];
+        }
+    }
+
+    return $errors;
+}
+
 function handlePdoError(PDOException $error): void
 {
     $message = $error->getMessage();
@@ -127,6 +203,7 @@ $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 try {
     Database::testConnection();
     $repository = new LibraryRepository(Database::connect());
+    $userRepository = new UserRepository(Database::connect());
 
     if ($method === 'GET' && $uriPath === '/') {
         jsonResponse(200, [
@@ -135,6 +212,9 @@ try {
             'version' => '1.0.0',
             'endpoints' => [
                 'library' => '/api/library',
+                'users' => '/api/users',
+                'auth_register' => '/api/auth/register',
+                'auth_login' => '/api/auth/login',
                 'health' => '/api/health',
             ],
         ]);
@@ -149,12 +229,90 @@ try {
         ]);
     }
 
+    if ($method === 'POST' && $uriPath === '/api/auth/register') {
+        $body = getRequestBody();
+        unset($body['id'], $body['password_hash'], $body['role']);
+
+        $validationErrors = validateAuthPayload($body, true);
+        if ($validationErrors !== []) {
+            jsonResponse(400, [
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validationErrors,
+            ]);
+        }
+
+        $email = strtolower(trim((string) $body['email']));
+        $existing = $userRepository->getUserByEmail($email);
+        if ($existing !== null) {
+            jsonResponse(409, [
+                'success' => false,
+                'message' => 'Email is already registered',
+            ]);
+        }
+
+        $payload = [
+            'name' => array_key_exists('name', $body) ? (trim((string) $body['name']) ?: null) : null,
+            'email' => $email,
+            'role' => 'member',
+            'password' => (string) $body['password'],
+        ];
+
+        $newId = $userRepository->addUser($payload);
+        $newUser = $userRepository->getUserById($newId);
+
+        jsonResponse(201, [
+            'success' => true,
+            'message' => 'Registration successful',
+            'data' => $newUser,
+        ]);
+    }
+
+    if ($method === 'POST' && $uriPath === '/api/auth/login') {
+        $body = getRequestBody();
+
+        $validationErrors = validateAuthPayload($body, false);
+        if ($validationErrors !== []) {
+            jsonResponse(400, [
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validationErrors,
+            ]);
+        }
+
+        $email = strtolower(trim((string) $body['email']));
+        $password = (string) $body['password'];
+        $user = $userRepository->verifyUserCredentials($email, $password);
+
+        if ($user === null) {
+            jsonResponse(401, [
+                'success' => false,
+                'message' => 'Invalid email or password',
+            ]);
+        }
+
+        jsonResponse(200, [
+            'success' => true,
+            'message' => 'Login successful',
+            'data' => $user,
+        ]);
+    }
+
     if ($method === 'GET' && $uriPath === '/api/library') {
         $scores = $repository->getAllScores();
         jsonResponse(200, [
             'success' => true,
             'count' => count($scores),
             'data' => $scores,
+        ]);
+    }
+
+    if ($method === 'GET' && $uriPath === '/api/users') {
+        $users = $userRepository->getAllUsers();
+        jsonResponse(200, [
+            'success' => true,
+            'count' => count($users),
+            'data' => $users,
         ]);
     }
 
@@ -224,6 +382,87 @@ try {
         }
     }
 
+    if (preg_match('#^/api/users/(\d+)$#', $uriPath, $matches) === 1) {
+        $id = (int) $matches[1];
+
+        if ($method === 'GET') {
+            $user = $userRepository->getUserById($id);
+            if ($user === null) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'User not found',
+                ]);
+            }
+
+            jsonResponse(200, [
+                'success' => true,
+                'data' => $user,
+            ]);
+        }
+
+        if ($method === 'PUT') {
+            $body = getRequestBody();
+            unset($body['id'], $body['password_hash']);
+
+            $validationErrors = validateUserPayload($body, true);
+            if ($validationErrors !== []) {
+                jsonResponse(400, [
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validationErrors,
+                ]);
+            }
+
+            $existing = $userRepository->getUserById($id);
+            if ($existing === null) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'User not found',
+                ]);
+            }
+
+            if ($body !== []) {
+                if (array_key_exists('name', $body)) {
+                    $body['name'] = trim((string) $body['name']);
+                    if ($body['name'] === '') {
+                        $body['name'] = null;
+                    }
+                }
+
+                if (array_key_exists('email', $body)) {
+                    $body['email'] = strtolower(trim((string) $body['email']));
+                }
+
+                if (array_key_exists('role', $body)) {
+                    $body['role'] = strtolower(trim((string) $body['role']));
+                }
+
+                $userRepository->updateUser($id, $body);
+            }
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => 'User updated successfully',
+            ]);
+        }
+
+        if ($method === 'DELETE') {
+            $existing = $userRepository->getUserById($id);
+            if ($existing === null) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'User not found',
+                ]);
+            }
+
+            $userRepository->deleteUser($id);
+            jsonResponse(200, [
+                'success' => true,
+                'message' => 'User deleted successfully',
+            ]);
+        }
+    }
+
     if ($method === 'POST' && $uriPath === '/api/library') {
         $body = getRequestBody();
         unset($body['id']);
@@ -247,6 +486,39 @@ try {
         ]);
     }
 
+    if ($method === 'POST' && $uriPath === '/api/users') {
+        $body = getRequestBody();
+        unset($body['id'], $body['password_hash']);
+
+        $validationErrors = validateUserPayload($body, false);
+        if ($validationErrors !== []) {
+            jsonResponse(400, [
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validationErrors,
+            ]);
+        }
+
+        if (array_key_exists('name', $body)) {
+            $body['name'] = trim((string) $body['name']);
+            if ($body['name'] === '') {
+                $body['name'] = null;
+            }
+        }
+
+        $body['email'] = strtolower(trim((string) $body['email']));
+        $body['role'] = strtolower(trim((string) $body['role']));
+
+        $newId = $userRepository->addUser($body);
+        $newUser = $userRepository->getUserById($newId);
+
+        jsonResponse(201, [
+            'success' => true,
+            'message' => 'User created successfully',
+            'data' => $newUser,
+        ]);
+    }
+
     jsonResponse(404, [
         'success' => false,
         'message' => 'Not Found - ' . $uriPath,
@@ -266,4 +538,3 @@ try {
 
     jsonResponse(500, $payload);
 }
-
