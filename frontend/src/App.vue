@@ -1,10 +1,33 @@
 <template>
-  <AuthPage v-if="!isAuthenticated" @authenticated="handleAuthenticated" />
+  <!-- Login Modal Overlay for guests -->
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="showLoginModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+        @click.self="showLoginModal = false"
+      >
+        <div class="relative w-full max-w-4xl">
+          <button
+            class="absolute -top-4 -right-4 z-10 rounded-full bg-white p-2 text-amber-800 shadow-md hover:bg-amber-50"
+            @click="showLoginModal = false"
+          >
+            <XMarkIcon class="h-5 w-5" />
+          </button>
+          <AuthPage @authenticated="handleAuthenticated" />
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 
-  <div
-    v-else
-    class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40"
-  >
+  <div class="app-shell min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100/40">
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div
         v-for="i in 20"
@@ -66,18 +89,30 @@
                 </button>
               </Transition>
 
-              <div
-                class="hidden rounded-full px-3 py-1 text-xs text-amber-800 md:flex md:items-center md:gap-2"
-              >
-                <span class="font-semibold text-amber-800 uppercase">{{ currentUser?.role }}</span>
-                <span>{{ currentUser?.email }}</span>
-              </div>
+              <template v-if="isAuthenticated">
+                <div
+                  class="hidden rounded-full px-3 py-1 text-xs text-amber-800 md:flex md:items-center md:gap-2"
+                >
+                  <span class="font-semibold text-amber-800 uppercase">{{
+                    currentUser?.role
+                  }}</span>
+                  <span>{{ currentUser?.email }}</span>
+                </div>
+
+                <button
+                  class="rounded-lg border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100"
+                  @click="handleLogout"
+                >
+                  Logout
+                </button>
+              </template>
 
               <button
-                class="rounded-lg border border-amber-300 px-3 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100"
-                @click="handleLogout"
+                v-else
+                class="rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100"
+                @click="showLoginModal = true"
               >
-                Logout
+                Login
               </button>
 
               <Transition
@@ -304,6 +339,7 @@ import {
   PlusIcon,
   SunIcon,
   MoonIcon,
+  XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { useMusicStore } from "./stores/musicStore";
 import { storeToRefs } from "pinia";
@@ -333,6 +369,7 @@ const editingSheet = ref<SheetMusic | null>(null);
 const currentUser = ref<User | null>(null);
 const currentPage = ref(1);
 
+const showLoginModal = ref(false);
 const isAuthenticated = computed(() => currentUser.value !== null);
 const canEditSheetMusic = computed(() => currentUser.value?.role === "admin");
 const canManageUsers = computed(
@@ -429,6 +466,7 @@ const handleScroll = () => {
 const handleAuthenticated = (user: User) => {
   currentUser.value = user;
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+  showLoginModal.value = false;
 };
 
 const handleLogout = () => {
