@@ -67,6 +67,22 @@ try {
         echo "Library arranger column added" . PHP_EOL;
     }
 
+    $genreColumnExistsStmt = $pdo->query("
+    SELECT 1
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'library'
+    AND COLUMN_NAME = 'genre'
+    LIMIT 1
+");
+
+    $genreExists = $genreColumnExistsStmt->fetch(PDO::FETCH_ASSOC) !== false;
+
+    if ($genreExists) {
+        $pdo->exec("ALTER TABLE `library` MODIFY COLUMN genre VARCHAR(255) NOT NULL AFTER arranger");
+        echo "Library genre column updated" . PHP_EOL;
+    }
+
     echo "Users, Library table created/verified" . PHP_EOL;
     echo "Database adjustment complete!" . PHP_EOL;
     exit(0);

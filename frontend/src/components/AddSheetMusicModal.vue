@@ -383,6 +383,7 @@ const genreOptions = [
   "Contemporary",
   "Christmas",
   "Pop",
+  "Folk",
 ];
 const difficultyOptions = ["Beginner", "Intermediate", "Advanced"];
 const instrumentOptions = [
@@ -433,10 +434,13 @@ const percussion = [
   "Glockenspiel",
   "Vibraphone",
   "Shaker",
+  "Tambourine",
+  "Bongo",
+  "Conga",
 ];
 const guitar = ["Guitar", "Electric Guitar", "Acoustic Guitar", "Bass Guitar"];
 const voice = ["Soprano", "Alto", "Tenor", "Bass", "Choir"];
-const strings = ["Violin", "Viola", "Cello", "Contrabass"];
+const strings = ["Violin", "Viola", "Cello", "Contrabass", "Harp"];
 const keyboard = ["Piano", "Keyboard", "Harpsichord", "Organ", "Celesta"];
 const timpani = ["Timpani"];
 const drumSet = ["Drum Set"];

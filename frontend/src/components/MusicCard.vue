@@ -41,7 +41,13 @@
             >
               {{ music.title }}
             </h3>
-            <p class="mb-2 text-sm text-amber-700">{{ music.composer }}</p>
+            <div class="mb-2 overflow-hidden">
+              <p class="animate-marquee text-sm whitespace-nowrap text-amber-700">
+                {{ music.composer }}{{ music.arranger ? " — " + music.arranger : "" }}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                {{ music.composer }}{{ music.arranger ? " — " + music.arranger : "" }}
+              </p>
+            </div>
 
             <div class="mb-3 flex flex-wrap gap-2">
               <span
@@ -139,7 +145,9 @@
               <div class="p-6">
                 <h2 class="mb-2 text-2xl font-bold">{{ music.title }}</h2>
                 <h3 class="mb-2 text-xl font-semibold italic">{{ music.subtitle }}</h3>
-                <p class="mb-4 text-lg text-amber-700">{{ music.composer }}</p>
+                <p class="mb-4 text-lg text-amber-700">
+                  {{ music.composer }}{{ music.arranger ? " — " + music.arranger : "" }}
+                </p>
 
                 <div class="mb-6 flex gap-2">
                   <span class="rounded-full bg-yellow-100 px-3 py-1 text-sm text-amber-900">{{
@@ -307,6 +315,20 @@ const handleEdit = () => {
 </script>
 
 <style scoped>
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 6s linear infinite;
+}
+
 @keyframes ripple {
   0% {
     transform: scale(0);
