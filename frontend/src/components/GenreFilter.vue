@@ -72,5 +72,15 @@ const genres = computed<Genre[]>(() => [
     name: "Pop",
     count: musicStore.sheetMusic.filter((s) => s.genre === "Pop").length,
   },
+  {
+    id: 11,
+    name: "Rock",
+    count: musicStore.sheetMusic.filter((s) => s.genre === "Rock").length,
+  },
+  {
+    id: 12,
+    name: "Folk",
+    count: musicStore.sheetMusic.filter((s) => s.genre === "Folk").length,
+  },
 ]);
 </script>

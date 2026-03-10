@@ -383,6 +383,7 @@ const genreOptions = [
   "Contemporary",
   "Christmas",
   "Pop",
+  "Rock",
   "Folk",
 ];
 const difficultyOptions = ["Beginner", "Intermediate", "Advanced"];

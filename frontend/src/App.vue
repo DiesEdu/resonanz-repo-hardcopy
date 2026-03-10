@@ -65,7 +65,7 @@
               <h1
                 class="bg-gradient-to-r from-amber-700 to-yellow-500 bg-clip-text text-2xl font-bold text-amber-950 text-transparent"
               >
-                Sheet Music Library
+                Resonanz Library
               </h1>
             </div>
 

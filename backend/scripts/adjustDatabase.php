@@ -79,7 +79,7 @@ try {
     $genreExists = $genreColumnExistsStmt->fetch(PDO::FETCH_ASSOC) !== false;
 
     if ($genreExists) {
-        $pdo->exec("ALTER TABLE `library` MODIFY COLUMN genre VARCHAR(255) NOT NULL AFTER arranger");
+        $pdo->exec("ALTER TABLE `library` MODIFY COLUMN genre ENUM('Classical', 'Baroque', 'Romantic', 'Impressionist', 'Modern', 'Jazz', 'Contemporary', 'Christmas', 'Pop', 'Rock', 'Folk') NOT NULL AFTER arranger");
         echo "Library genre column updated" . PHP_EOL;
     }
 
