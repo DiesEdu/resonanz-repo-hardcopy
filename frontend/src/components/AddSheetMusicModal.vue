@@ -405,6 +405,8 @@ const orchestraCollectionSections = [
   "Brass",
   "Percussion",
   "Strings",
+  "Voice",
+  "Guitar",
   "Keyboard",
   "Timpani",
   "Drum Set",
@@ -430,9 +432,12 @@ const percussion = [
   "Marimba",
   "Glockenspiel",
   "Vibraphone",
+  "Shaker",
 ];
+const guitar = ["Guitar", "Electric Guitar", "Acoustic Guitar", "Bass Guitar"];
+const voice = ["Soprano", "Alto", "Tenor", "Bass", "Choir"];
 const strings = ["Violin", "Viola", "Cello", "Contrabass"];
-const keyboard = ["Piano", "Harpsichord", "Organ", "Celesta"];
+const keyboard = ["Piano", "Keyboard", "Harpsichord", "Organ", "Celesta"];
 const timpani = ["Timpani"];
 const drumSet = ["Drum Set"];
 
@@ -440,6 +445,8 @@ const orchestraCollectionMap = {
   Woodwinds: woodwinds,
   Brass: brass,
   Percussion: percussion,
+  Guitar: guitar,
+  Voice: voice,
   Strings: strings,
   Keyboard: keyboard,
   Timpani: timpani,
